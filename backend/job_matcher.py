@@ -2,9 +2,13 @@
 job_matcher.py
 --------------
 Compares extracted skills against job role requirements.
-Calculates:
-  - Weighted match percentage per job (matched / total_required * 100)
-  - Missing skills per job
+Uses WEIGHTED matching based on core competencies:
+  - Core skills  (from core_skills field) → weight: 70%
+  - Other skills (remaining required)      → weight: 30%
+  weighted_score = 0.7 × (core_matched/core_total) + 0.3 × (other_matched/other_total)
+
+Also computes:
+  - Missing skills split (critical vs secondary)
   - Recommended courses
   - Career readiness score (0-100)
   - Smart insights (via insights_engine)
@@ -38,17 +42,50 @@ with open(os.path.join(DATA_DIR, "courses.json"), encoding="utf-8") as f:
 # Core matching helpers
 # ---------------------------------------------------------------------------
 
-def calculate_match(extracted_skills: List[str], required_skills: List[str]) -> float:
+# Core / secondary weight constants
+CORE_WEIGHT  = 0.70   # Core competency skills count 70%
+OTHER_WEIGHT = 0.30   # Secondary skills count 30%
+
+
+def calculate_match(
+    extracted_skills: List[str],
+    required_skills: List[str],
+    core_skills: List[str] = None,
+) -> float:
     """
-    Weighted match percentage:
-    score = (matched_skills / total_required_skills) * 100
+    Weighted match percentage based on core competencies.
+
+    Formula:
+      core_score  = (core_matched  / core_total)  if core_total  > 0 else 1.0
+      other_score = (other_matched / other_total) if other_total > 0 else 1.0
+      weighted    = CORE_WEIGHT * core_score + OTHER_WEIGHT * other_score
+
+    Falls back to simple (matched/total) when core_skills is empty.
     Rounded to 1 decimal place.
     """
     if not required_skills:
         return 0.0
+
     extracted_lower = set(s.lower() for s in extracted_skills)
-    matched = sum(1 for skill in required_skills if skill.lower() in extracted_lower)
-    return round((matched / len(required_skills)) * 100, 1)
+    core_lower      = set(s.lower() for s in (core_skills or []))
+
+    if core_lower:
+        # Split required skills into core and secondary
+        core_required  = [s for s in required_skills if s.lower() in core_lower]
+        other_required = [s for s in required_skills if s.lower() not in core_lower]
+
+        core_matched  = sum(1 for s in core_required  if s.lower() in extracted_lower)
+        other_matched = sum(1 for s in other_required if s.lower() in extracted_lower)
+
+        core_score  = core_matched  / len(core_required)  if core_required  else 1.0
+        other_score = other_matched / len(other_required) if other_required else 1.0
+
+        weighted = CORE_WEIGHT * core_score + OTHER_WEIGHT * other_score
+        return round(weighted * 100, 1)
+    else:
+        # Simple fallback if no core_skills defined
+        matched = sum(1 for s in required_skills if s.lower() in extracted_lower)
+        return round((matched / len(required_skills)) * 100, 1)
 
 
 def get_missing_skills(extracted_skills: List[str], required_skills: List[str]) -> List[str]:
@@ -121,11 +158,11 @@ def match_jobs(extracted_skills: List[str]) -> Dict[str, Any]:
     extracted_lower = set(s.lower() for s in extracted_skills)
 
     for job in JOBS:
-        match_pct  = calculate_match(extracted_skills, job["skills"])
+        core_skills = job.get("core_skills", [])
+        match_pct  = calculate_match(extracted_skills, job["skills"], core_skills)
         missing    = get_missing_skills(extracted_skills, job["skills"])
         matched    = [s for s in job["skills"] if s.lower() in extracted_lower]
         courses    = get_courses_for_skills(missing)
-        core_skills = job.get("core_skills", [])
 
         # ── Split missing into critical vs secondary ──
         missing_critical  = [s for s in missing if s.lower() in [c.lower() for c in core_skills]]
