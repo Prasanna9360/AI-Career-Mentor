@@ -14,7 +14,7 @@
 
 | Skill-to-Employment Mapping | Career Roadmap |
 |---|---|
-| ![Skill Mapping](docs/screenshots/skill_mapping.png) | ![Roadmap](docs/screenshots/roadmap.png) |
+| ![Skill Mapping]([docs/screenshots/skill_mapping.png](https://github.com/Prasanna9360/AI-Career-Mentor/blob/main/Screenshot%202026-03-31%20163024.png)) | ![Roadmap](docs/screenshots/roadmap.png) |
 
 | JD Description Matcher | Recommended Courses |
 |---|---|
