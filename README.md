@@ -11,19 +11,33 @@
 ---
 
 ## 📸 Screenshots
-👉 “AI-Driven Skill-to-Employment Mapping Platform”
+
+👉 AI-Driven Skill-to-Employment Mapping Platform
+
 <img width="635" height="858" alt="Screenshot 2026-03-31 163024" src="https://github.com/user-attachments/assets/7cd7e7a3-918c-414d-a559-4835edb07d14" />
-👉 “AI Career Dashboard: Your Path to Job Readiness”
+
+👉 AI Career Dashboard: Your Path to Job Readiness
+
 <img width="1906" height="908" alt="Screenshot 2026-03-31 163152" src="https://github.com/user-attachments/assets/a766deb7-e6f4-4336-8721-3229e14858f9" />
-👉 “Skill-to-Employment Mapping: Discover Your Best-Fit Career Paths”
+
+👉 Skill-to-Employment Mapping: Discover Your Best-Fit Career Paths
+
 <img width="1905" height="904" alt="Screenshot 2026-03-31 163215" src="https://github.com/user-attachments/assets/ded3854c-4ff1-4998-b81c-b19c1776175f" />
-👉 “Job Description Matcher: Compare Your Resume with Real Job Requirements”
+
+👉 Job Description Matcher: Compare Your Resume with Real Job Requirements
+
 <img width="1902" height="900" alt="Screenshot 2026-03-31 163228" src="https://github.com/user-attachments/assets/3034a388-b5fc-4f39-8dc7-e1bfc7fa7b2c" />
-👉 “AI Career Roadmap: Your Step-by-Step Path to Job Readiness”
+
+👉 AI Career Roadmap: Your Step-by-Step Path to Job Readiness
+
 <img width="1897" height="912" alt="Screenshot 2026-03-31 163257" src="https://github.com/user-attachments/assets/15508b4c-e141-4ade-a1d7-23a46320ef2d" />
-👉 “Recommended Courses: AI-Curated Learning Paths for Your Career”
+
+👉 Recommended Courses: AI-Curated Learning Paths for Your Career
+
 <img width="1886" height="900" alt="Screenshot 2026-03-31 163325" src="https://github.com/user-attachments/assets/0be711d0-f151-491b-b10f-b7767c101ae9" />
-👉 “Resume Improvement Tips: AI-Powered Suggestions to Strengthen Your Profile”
+
+👉 Resume Improvement Tips: AI-Powered Suggestions to Strengthen Your Profile
+
 <img width="1885" height="899" alt="Screenshot 2026-03-31 163344" src="https://github.com/user-attachments/assets/8d7b02f8-7757-40ad-93a5-ee8ec074f905" />
 
 ---
