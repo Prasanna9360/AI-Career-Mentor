@@ -278,4 +278,10 @@ MIT License — free to use, modify, and distribute.
 
 ---
 
+## 🏆 Achievements
+
+- 🥈 Secured 2nd Prize at HACKFEST (MOBIUS 2K26)  
+  Organized by Thiagarajar College of Engineering  
+  Built an AI-powered Skill-to-Employment Mapping Platform
+  
 *Built with ❤️ for hackathon · AI Skill-to-Employment Mapping Platform v3.0*
