@@ -5,7 +5,7 @@ fastapi==0.115.0
 uvicorn[standard]==0.31.0
 python-multipart==0.0.18
 pdfplumber==0.11.4
-pypdf==5.1.0
+pypdf==6.10.2
 # We use a newer version of spacy that has better 3.13 support
 spacy>=3.8.2
 numpy>=2.1.0
