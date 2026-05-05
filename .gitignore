@@ -74,6 +74,8 @@ auth-server/node_modules/
 
 # ── Accidental helper text files ───────────────────
 *.instructions.txt
+"# 1 — Install dependencies (first t.txt"
+How to Run.txt
 
 # ── Runtime-generated cache files ─────────────────
 backend/data/cached_mcq.json
