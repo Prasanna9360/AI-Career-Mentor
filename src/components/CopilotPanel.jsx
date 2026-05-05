@@ -28,26 +28,39 @@ const QUICK_ACTIONS = [
   { label: 'Salary Expectations',  icon: '💰', msg: 'What salary can I expect for my target role based on my current skill level?' },
 ];
 
-// ── Markdown renderer ─────────────────────────────────────────────────────────
+// Safe bold text renderer — no dangerouslySetInnerHTML
+function SafeBold({ text }) {
+  const parts = text.split(/(\*\*.*?\*\*)/g);
+  return (
+    <>
+      {parts.map((part, i) =>
+        /^\*\*(.*?)\*\*$/.test(part)
+          ? <strong key={i}>{part.slice(2, -2)}</strong>
+          : <span key={i}>{part}</span>
+      )}
+    </>
+  );
+}
+
+// Safe markdown renderer — no dangerouslySetInnerHTML
 function RenderMessage({ content }) {
   return (
     <div>
       {content.split('\n').map((line, i) => {
-        const bold = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         if (/^[-•*]\s/.test(line)) return (
           <div key={i} style={{ display: 'flex', gap: '0.4rem', marginBottom: '0.1rem' }}>
             <span style={{ color: 'var(--primary)', flexShrink: 0 }}>•</span>
-            <span dangerouslySetInnerHTML={{ __html: bold.replace(/^[-•*]\s/, '') }} />
+            <span><SafeBold text={line.replace(/^[-•*]\s/, '')} /></span>
           </div>
         );
         if (/^\d+\.\s/.test(line)) return (
           <div key={i} style={{ display: 'flex', gap: '0.4rem', marginBottom: '0.1rem' }}>
             <span style={{ color: 'var(--primary)', flexShrink: 0, minWidth: 16 }}>{line.match(/^\d+/)[0]}.</span>
-            <span dangerouslySetInnerHTML={{ __html: bold.replace(/^\d+\.\s/, '') }} />
+            <span><SafeBold text={line.replace(/^\d+\.\s/, '')} /></span>
           </div>
         );
         if (line.trim() === '') return <div key={i} style={{ height: '0.35rem' }} />;
-        return <div key={i} dangerouslySetInnerHTML={{ __html: bold }} style={{ marginBottom: '0.05rem' }} />;
+        return <div key={i} style={{ marginBottom: '0.05rem' }}><SafeBold text={line} /></div>;
       })}
     </div>
   );

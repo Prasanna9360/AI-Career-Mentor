@@ -2,7 +2,7 @@
 resume_parser.py
 ----------------
 Extracts raw text from uploaded PDF resumes.
-Uses pdfplumber as primary, falls back to PyPDF2.
+Uses pdfplumber as primary, falls back to pypdf (maintained PyPDF2 successor).
 """
 
 import io
@@ -29,10 +29,10 @@ def extract_text_from_pdf(file_bytes: bytes) -> str:
     except Exception as e:
         print(f"[pdfplumber] Failed: {e}")
 
-    # --- Attempt 2: PyPDF2 fallback ---
+    # --- Attempt 2: pypdf fallback (replaces deprecated PyPDF2) ---
     try:
-        import PyPDF2
-        reader = PyPDF2.PdfReader(io.BytesIO(file_bytes))
+        from pypdf import PdfReader
+        reader = PdfReader(io.BytesIO(file_bytes))
         for page in reader.pages:
             page_text = page.extract_text()
             if page_text:
@@ -40,7 +40,7 @@ def extract_text_from_pdf(file_bytes: bytes) -> str:
         if text.strip():
             return text.strip()
     except Exception as e:
-        print(f"[PyPDF2] Failed: {e}")
+        print(f"[pypdf] Failed: {e}")
 
     # --- Final fallback: return empty string ---
     return text.strip()

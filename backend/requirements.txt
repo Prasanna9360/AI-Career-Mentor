@@ -1,23 +1,22 @@
 # AI Career Intelligence System — Backend Dependencies
 # Install: pip install -r requirements.txt
-# Generated with pinned versions for reproducibility
 
 # Web framework
 fastapi==0.110.0
 uvicorn[standard]==0.29.0
 
-# File upload support
-python-multipart==0.0.9
+# File upload support — 0.0.18+ fixes Arbitrary File Write (CVE-2024-53981) and DoS
+python-multipart==0.0.18
 
-# PDF parsing
+# PDF parsing — pypdf replaces PyPDF2 (maintained fork, no infinite-loop bug)
 pdfplumber==0.10.3
-PyPDF2==3.0.1
+pypdf==4.3.1
 
 # NLP (optional — falls back to keyword matching if not installed)
-spacy==3.7.4
+spacy==3.7.6
 
 # Groq LLM client
 groq==0.9.0
 
-# Environment variables
+# Environment variables — 1.0.1+ fixes symlink arbitrary overwrite issue
 python-dotenv==1.0.1

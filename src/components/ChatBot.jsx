@@ -23,20 +23,32 @@ const SUGGESTIONS = [
   'Compare my top 3 job matches',
 ];
 
-// Simple markdown renderer (bold, bullet lists)
+// Safe bold text renderer — splits on **text** and renders <strong> without dangerouslySetInnerHTML
+function SafeBold({ text }) {
+  const parts = text.split(/(\*\*.*?\*\*)/g);
+  return (
+    <>
+      {parts.map((part, i) =>
+        /^\*\*(.*?)\*\*$/.test(part)
+          ? <strong key={i}>{part.slice(2, -2)}</strong>
+          : <span key={i}>{part}</span>
+      )}
+    </>
+  );
+}
+
+// Safe markdown renderer (bold + bullet lists) — no dangerouslySetInnerHTML
 function RenderMessage({ content }) {
   const parts = content.split('\n').map((line, i) => {
-    // Bold **text**
-    const boldLine = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    // Bullet •/-
+    // Bullet •/-/*
     if (/^[-•*]\s/.test(line)) {
       return <div key={i} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.1rem' }}>
         <span style={{ color: 'var(--primary)', flexShrink: 0 }}>•</span>
-        <span dangerouslySetInnerHTML={{ __html: boldLine.replace(/^[-•*]\s/, '') }} />
+        <span><SafeBold text={line.replace(/^[-•*]\s/, '')} /></span>
       </div>;
     }
     if (line.trim() === '') return <div key={i} style={{ height: '0.4rem' }} />;
-    return <div key={i} dangerouslySetInnerHTML={{ __html: boldLine }} style={{ marginBottom: '0.05rem' }} />;
+    return <div key={i} style={{ marginBottom: '0.05rem' }}><SafeBold text={line} /></div>;
   });
   return <div>{parts}</div>;
 }
