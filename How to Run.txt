@@ -1,0 +1,111 @@
+# AI Career Intelligence System — v9
+
+🔥 SIMPLE HOW TO RUN (RECOMMENDED)
+
+You need 4 terminals.
+
+---
+
+🟢 TERMINAL 1 — START DATABASE (MongoDB)
+
+cd "C:\Program Files\MongoDB\Server\8.2\bin"
+.\mongod --dbpath "C:\data\db"
+
+Wait until:
+👉 "Waiting for connections"
+
+⚠️ Keep this terminal open
+
+---
+
+🟢 TERMINAL 2 — START AI BACKEND (Python)
+
+cd D:\AI*
+cd backend
+
+python -m uvicorn main:app --reload --port 8000
+
+Wait until:
+👉 "Uvicorn running on http://0.0.0.0:8000"
+
+---
+
+🟢 TERMINAL 3 — START AUTH SERVER
+
+cd D:\AI*
+cd auth-server
+
+npm run dev
+
+Wait until:
+👉 "Auth server running on http://localhost:3001"
+
+---
+
+🟢 TERMINAL 4 — START FRONTEND
+
+cd D:\AI*
+
+npm run dev
+
+---
+
+🌐 OPEN IN BROWSER
+
+http://localhost:5173
+
+---
+
+⚠️ IMPORTANT RULES
+
+✔ Always start in this order:
+
+1. MongoDB
+2. Python Backend
+3. Auth Server
+4. Frontend
+
+✔ Do NOT close MongoDB terminal
+
+✔ Use:
+cd D:\AI*
+(avoid path errors)
+
+---
+
+🧪 QUICK TEST
+
+1. Open app
+2. Sign up
+3. Upload resume
+
+👉 If all works → system is fully running
+
+---
+
+🛠️ QUICK FIXES
+
+MongoDB error?
+→ Check folder: C:\data\db
+
+Frontend error?
+→ Run inside project root
+
+Login not working?
+→ Check auth server is running
+
+Resume parsing fails?
+→ Check backend (port 8000)
+
+---
+
+🎯 RESULT
+
+You are running:
+
+✔ Database
+✔ AI backend
+✔ Auth system
+✔ Frontend UI
+
+👉 Full-stack AI system

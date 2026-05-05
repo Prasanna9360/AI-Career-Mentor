@@ -1,0 +1,32 @@
+# ================================
+# TERMINAL 1 — START MONGODB
+# ================================
+cd "C:\Program Files\MongoDB\Server\8.2\bin"
+.\mongod --dbpath "C:\data\db"
+
+
+# ================================
+# TERMINAL 2 — START AUTH SERVER
+# ================================
+cd D:\AI*
+cd auth-server
+
+# First time only
+npm install
+
+# Start backend
+npm run dev
+
+
+# ================================
+# TERMINAL 3 — START FRONTEND
+# ================================
+cd D:\AI*
+
+npm run dev
+
+
+# ================================
+# OPEN IN BROWSER
+# ================================
+http://localhost:5173
