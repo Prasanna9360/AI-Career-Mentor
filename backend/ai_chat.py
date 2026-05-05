@@ -12,9 +12,17 @@ import os
 from groq import Groq
 from typing import Optional, List, Dict, Any
 
+# Load .env file automatically (pip install python-dotenv)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # dotenv optional — falls back to system env vars
+
 # Load from environment — never hardcode secrets
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 MODEL = "llama-3.1-8b-instant"
+
 
 # ---------------------------------------------------------------------------
 # System prompt builder — injects user's resume context

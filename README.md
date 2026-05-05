@@ -182,7 +182,7 @@ AI-Career-Mentor/
 ### 1 · Clone
 
 ```bash
-git clone https://github.com/Prasanna9360/AI-Career-Mentor.git
+git clone https://github.com/Prasannaganesann/AI-Career-Mentor.git
 cd AI-Career-Mentor
 ```
 
