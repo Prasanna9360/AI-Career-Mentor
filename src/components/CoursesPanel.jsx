@@ -93,7 +93,7 @@ function CourseCard({ course, currentMatch = 65, skillRank = 0, index = 0 }) {
             onClick={handleStart}
             style={{
               display: 'flex', alignItems: 'center', gap: '0.4rem',
-              padding: '0.45rem 1rem', borderRadius: 8, border: 'none', cursor: 'pointer',
+              padding: '0.45rem 1rem', borderRadius: 8, cursor: 'pointer',
               background: clicked ? 'rgba(16,185,129,0.2)' : isHigh ? 'var(--primary)' : 'rgba(99,102,241,0.2)',
               color: clicked ? 'var(--green)' : isHigh ? 'white' : '#c4b5fd',
               fontSize: '0.78rem', fontWeight: 700, transition: 'all 0.2s ease',

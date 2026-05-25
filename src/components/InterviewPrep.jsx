@@ -283,7 +283,7 @@ export default function InterviewPrep({ topJob, extractedSkills = [] }) {
         <div style={{ display: 'flex', gap: '0.25rem', marginLeft: '0.25rem' }}>
           {['All', 'Easy', 'Medium', 'Hard'].map(d => (
             <button key={d} onClick={() => setDifficulty(d)}
-              style={{ padding: '0.22rem 0.6rem', borderRadius: 100, border: 'none', cursor: 'pointer', fontSize: '0.7rem', fontWeight: 600, transition: 'all 0.15s ease',
+              style={{ padding: '0.22rem 0.6rem', borderRadius: 100, cursor: 'pointer', fontSize: '0.7rem', fontWeight: 600, transition: 'all 0.15s ease',
                 background: difficulty === d ? (DIFFICULTY_STYLE[d]?.bg || 'var(--primary)') : 'rgba(255,255,255,0.04)',
                 color: difficulty === d ? (DIFFICULTY_STYLE[d]?.text || 'var(--primary)') : 'var(--text-4)',
                 border: difficulty === d ? `1px solid ${DIFFICULTY_STYLE[d]?.border || 'var(--primary)'}` : '1px solid transparent',

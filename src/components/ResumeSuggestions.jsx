@@ -37,7 +37,7 @@ function SkillTipCard({ item, index }) {
         </span>
         {/* Skill name */}
         <span style={{
-          fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-main)',
+          fontSize: '0.82rem', fontWeight: 600,
           background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.25)',
           borderRadius: '6px', padding: '0.1rem 0.45rem', color: 'var(--primary-light)',
         }}>
