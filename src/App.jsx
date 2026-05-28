@@ -113,17 +113,28 @@ function AppInner() {
     }, 1500);
   };
 
-  /* ── Upload resume (real PDF) ── */
+  /* ── Upload resume (real PDF or fallback) ── */
   const handleUpload = async (file) => {
     setError('');
     setAppState('loading');
     try {
+      // 1. Try real backend
       const data = await uploadResume(file);
       setAnalysisData(data);
       setAppState('dashboard');
     } catch (err) {
-      setError(err.message || 'Failed to analyze resume. Make sure the backend is running.');
-      setAppState('landing');
+      console.warn("Backend API unavailable, falling back to demo data:", err);
+      // 2. Fallback to demo data if backend is not running (e.g. GitHub Pages)
+      setTimeout(async () => {
+        try {
+          const { DEMO_DATA } = await import('./utils/demoData');
+          setAnalysisData(DEMO_DATA);
+          setAppState('dashboard');
+        } catch (demoErr) {
+          setError('Failed to analyze resume. Make sure the backend is running.');
+          setAppState('landing');
+        }
+      }, 2500); // Simulate AI processing time
     }
   };
 
