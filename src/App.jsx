@@ -7,7 +7,6 @@
 import React, { useState, useEffect, Component } from 'react';
 import LandingPage  from './components/LandingPage';
 import Dashboard    from './components/Dashboard';
-import { uploadResume } from './utils/api';
 import { ThemeProvider }              from './context/ThemeContext';
 import { CopilotProvider, useCopilot } from './context/CopilotContext';
 import { AuthProvider }               from './context/AuthContext';
@@ -113,30 +112,48 @@ function AppInner() {
     }, 1500);
   };
 
-  /* ── Upload resume (real PDF or fallback) ── */
+  /* ── Upload resume — 3-tier: client AI → Python backend → demo ── */
   const handleUpload = async (file) => {
     setError('');
     setAppState('loading');
+
+    // ── Tier 1: Client-side Groq analysis (works everywhere, no backend needed) ──
+    const groqKey = import.meta.env.VITE_GROQ_API_KEY;
+    if (groqKey && groqKey !== 'your_groq_api_key_here') {
+      try {
+        const { analyzeResumeClientSide } = await import('./utils/clientAnalysis');
+        const data = await analyzeResumeClientSide(file);
+        setAnalysisData(data);
+        setAppState('dashboard');
+        return;
+      } catch (clientErr) {
+        console.warn('Client-side analysis failed, trying backend:', clientErr.message);
+      }
+    }
+
+    // ── Tier 2: Try Python backend (localhost dev server) ──
     try {
-      // 1. Try real backend
+      const { uploadResume } = await import('./utils/api');
       const data = await uploadResume(file);
       setAnalysisData(data);
       setAppState('dashboard');
-    } catch (err) {
-      console.warn("Backend API unavailable, falling back to demo data:", err);
-      setError('Backend API not found. Loading Demo Data instead...');
-      // 2. Fallback to demo data if backend is not running (e.g. GitHub Pages)
-      setTimeout(async () => {
-        try {
-          const { DEMO_DATA } = await import('./utils/demoData');
-          setAnalysisData(DEMO_DATA);
-          setAppState('dashboard');
-        } catch (demoErr) {
-          setError('Failed to analyze resume. Make sure the backend is running.');
-          setAppState('landing');
-        }
-      }, 2500); // Simulate AI processing time
+      return;
+    } catch (backendErr) {
+      console.warn('Backend unavailable:', backendErr.message);
     }
+
+    // ── Tier 3: Fallback to demo data ──
+    setError('Using demo data — add VITE_GROQ_API_KEY to .env for real analysis.');
+    setTimeout(async () => {
+      try {
+        const { DEMO_DATA } = await import('./utils/demoData');
+        setAnalysisData(DEMO_DATA);
+        setAppState('dashboard');
+      } catch {
+        setError('Analysis failed. Please check your setup.');
+        setAppState('landing');
+      }
+    }, 1500);
   };
 
   /* ── Reset to landing ── */

@@ -245,9 +245,6 @@ threadpoolctl==3.6.0
 tinycss2==1.4.0
 toml==0.10.2
 toolz==1.1.0
-torch==2.7.1+cpu
-torchaudio==2.7.1+cpu
-torchvision==0.22.1+cpu
 tornado==6.5.4
 tqdm==4.67.3
 traitlets==5.14.3
