@@ -33,10 +33,10 @@ function useTypewriter(phrases, speed = 75, pause = 2200) {
 }
 
 const FLOATING_BADGES = [
-  { icon: '✅', text: 'ATS Score: 94%', color: '#22c55e', delay: '0s', pos: { left: '50%', marginLeft: '-480px', top: '22%' } },
-  { icon: '🎯', text: '25 Job Matches', color: '#6366f1', delay: '0.5s', pos: { right: '50%', marginRight: '-480px', top: '15%' } },
-  { icon: '📊', text: 'Skill Gap Analysis', color: '#8b5cf6', delay: '1s', pos: { right: '50%', marginRight: '-500px', top: '65%' } },
-  { icon: '🚀', text: 'Career Roadmap', color: '#06b6d4', delay: '1.5s', pos: { left: '50%', marginLeft: '-480px', top: '65%' } },
+  { icon: '✅', text: 'ATS Score: 94%', color: '#22c55e', delay: '0s', pos: { left: '3vw', top: '22%' } },
+  { icon: '🎯', text: '25 Job Matches', color: '#6366f1', delay: '0.5s', pos: { right: '3vw', top: '15%' } },
+  { icon: '📊', text: 'Skill Gap Analysis', color: '#8b5cf6', delay: '1s', pos: { right: '4vw', top: '65%' } },
+  { icon: '🚀', text: 'Career Roadmap', color: '#06b6d4', delay: '1.5s', pos: { left: '4vw', top: '65%' } },
 ];
 
 export default function HeroSection({ onGetStarted, onAnalyzeResume, onExploreCareers }) {
@@ -279,7 +279,7 @@ export default function HeroSection({ onGetStarted, onAnalyzeResume, onExploreCa
           50% { transform: translateY(-10px); }
         }
         @keyframes blink { 50% { opacity: 0; } }
-        @media (max-width: 1100px) {
+        @media (max-width: 1200px) {
           .hero-floating-badge { display: none !important; }
         }
       `}</style>
