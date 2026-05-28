@@ -1,16 +1,17 @@
 /**
- * App.jsx — v9
- * Root with Auth + Theme + Copilot providers.
- * Auth flow: login/signup → landing → dashboard.
+ * App.jsx — v10
+ * Updated routing:
+ * - Landing page is now PUBLIC (shown to everyone, no auth required)
+ * - Auth modal overlays landing page when "Get Started" is clicked
+ * - After login → Upload → Dashboard flow
  */
-
 import React, { useState, useEffect, Component } from 'react';
-import LandingPage   from './components/LandingPage';
-import Dashboard     from './components/Dashboard';
-import AuthPage      from './components/AuthPage';
-import CopilotPanel  from './components/CopilotPanel';
+import LandingPage  from './components/LandingPage';
+import Dashboard    from './components/Dashboard';
+import AuthPage     from './components/AuthPage';
+import CopilotPanel from './components/CopilotPanel';
 import { uploadResume } from './utils/api';
-import { ThemeProvider }  from './context/ThemeContext';
+import { ThemeProvider }              from './context/ThemeContext';
 import { CopilotProvider, useCopilot } from './context/CopilotContext';
 import { AuthProvider, useAuth }       from './context/AuthContext';
 
@@ -36,22 +37,33 @@ class RootErrorBoundary extends Component {
   }
 }
 
-/* ── Loading screen ────────────────────────────────────────── */
+/* ── AI Analysis Loading Screen ────────────────────────────── */
 function LoadingScreen() {
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '24px', background: 'var(--bg-base)' }}>
-      <div style={{ width: 52, height: 52, borderRadius: '50%', border: '3px solid var(--primary-subtle)', borderTop: '3px solid var(--primary)', animation: 'spin 0.85s linear infinite' }} />
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '24px', background: '#030712' }}>
+      {/* Animated orb */}
+      <div style={{ position: 'relative', width: 80, height: 80 }}>
+        <div style={{ width: 80, height: 80, borderRadius: '50%', border: '3px solid rgba(99,102,241,0.15)', borderTop: '3px solid #6366f1', animation: 'spin 0.85s linear infinite', position: 'absolute' }} />
+        <div style={{ width: 80, height: 80, borderRadius: '50%', border: '3px solid rgba(139,92,246,0.1)', borderBottom: '3px solid #8b5cf6', animation: 'spin 1.2s linear infinite reverse', position: 'absolute' }} />
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem' }}>🧠</div>
+      </div>
       <div style={{ textAlign: 'center' }}>
-        <div style={{ fontFamily: 'Space Grotesk, sans-serif', fontSize: '16px', fontWeight: 700, color: 'var(--text-1)', marginBottom: '6px' }}>
+        <div style={{ fontFamily: "'Space Grotesk', sans-serif", fontSize: '1.1rem', fontWeight: 700, color: '#f1f5f9', marginBottom: '6px' }}>
           Analyzing your resume…
         </div>
-        <div style={{ fontSize: '13px', color: 'var(--text-4)' }}>
+        <div style={{ fontSize: '13px', color: '#475569' }}>
           Extracting skills · Matching roles · Generating insights
         </div>
       </div>
-      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', justifyContent: 'center' }}>
+      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
         {['Parsing PDF', 'Finding Skills', 'Matching Jobs', 'AI Insights'].map((s, i) => (
-          <div key={s} style={{ padding: '4px 12px', background: 'var(--primary-subtle)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: 100, fontSize: '11px', color: 'var(--primary)', opacity: 0, animation: `fadeIn 0.4s ease ${i * 0.6}s forwards` }}>{s}</div>
+          <div key={s} style={{
+            padding: '4px 14px',
+            background: 'rgba(99,102,241,0.1)',
+            border: '1px solid rgba(99,102,241,0.2)',
+            borderRadius: '100px', fontSize: '11px', color: '#a5b4fc',
+            opacity: 0, animation: `fadeIn 0.4s ease ${i * 0.6}s forwards`,
+          }}>{s}</div>
         ))}
       </div>
       <style>{`@keyframes spin { to { transform: rotate(360deg); } } @keyframes fadeIn { to { opacity: 1; } }`}</style>
@@ -59,27 +71,67 @@ function LoadingScreen() {
   );
 }
 
+/* ── Auth Modal Overlay ─────────────────────────────────────── */
+function AuthModal({ mode, onClose, onSwitch, onSkip }) {
+  return (
+    <div
+      style={{
+        position: 'fixed', inset: 0, zIndex: 9999,
+        background: 'rgba(3,7,18,0.85)',
+        backdropFilter: 'blur(12px)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '1rem',
+        animation: 'fadeIn 0.2s ease',
+      }}
+      onClick={e => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div style={{
+        background: '#0a0f1e',
+        border: '1px solid rgba(99,102,241,0.25)',
+        borderRadius: '20px',
+        overflow: 'hidden',
+        width: '100%', maxWidth: '440px',
+        boxShadow: '0 40px 80px rgba(0,0,0,0.7)',
+        animation: 'scaleIn 0.3s cubic-bezier(0.16,1,0.3,1)',
+        position: 'relative',
+      }}>
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          style={{
+            position: 'absolute', top: '16px', right: '16px',
+            width: '28px', height: '28px', borderRadius: '50%',
+            background: 'rgba(255,255,255,0.06)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            color: '#64748b', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '14px', zIndex: 1,
+          }}
+        >✕</button>
+        <AuthPage
+          mode={mode}
+          onSwitch={onSwitch}
+          onSkip={() => { onClose(); onSkip(); }}
+        />
+      </div>
+      <style>{`
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.94) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+      `}</style>
+    </div>
+  );
+}
+
 /* ── Inner App ─────────────────────────────────────────────── */
 function AppInner() {
-  const { user, isLoggedIn, logout, loading: authLoading } = useAuth();
+  const { isLoggedIn, logout, loading: authLoading } = useAuth();
   const { setProfile } = useCopilot();
 
   const [authMode,     setAuthMode]     = useState('login');
-  const [appState,     setAppState]     = useState('auth');
+  const [showAuth,     setShowAuth]     = useState(false);
+  const [appState,     setAppState]     = useState('landing'); // always start at landing
   const [analysisData, setAnalysisData] = useState(null);
   const [error,        setError]        = useState('');
-
-  // Once auth loading resolves, set initial state
-  useEffect(() => {
-    if (!authLoading) {
-      setAppState(isLoggedIn ? 'landing' : 'auth');
-    }
-  }, [authLoading, isLoggedIn]);
-
-  // When user logs in → go to landing
-  useEffect(() => {
-    if (isLoggedIn && appState === 'auth') setAppState('landing');
-  }, [isLoggedIn]);
 
   // Sync resume into copilot
   useEffect(() => {
@@ -89,6 +141,7 @@ function AppInner() {
   /* ── Demo mode ── */
   const handleDemo = async () => {
     setError('');
+    setShowAuth(false);
     setAppState('loading');
     setTimeout(async () => {
       try {
@@ -111,12 +164,23 @@ function AppInner() {
       setAnalysisData(data);
       setAppState('dashboard');
     } catch (err) {
-      setError(err.message || 'Failed to analyze resume. Make sure the backend is running on port 8000.');
+      setError(err.message || 'Failed to analyze resume. Make sure the backend is running.');
       setAppState('landing');
     }
   };
 
-  /* ── Reset to landing ── */
+  /* ── "Get Started" click from landing ── */
+  const handleGetStarted = () => {
+    if (isLoggedIn) {
+      // Already logged in → go straight to demo/upload
+      handleDemo();
+    } else {
+      // Show auth modal
+      setShowAuth(true);
+    }
+  };
+
+  /* ── Reset ── */
   const handleReset = () => {
     setAppState('landing');
     setAnalysisData(null);
@@ -126,34 +190,33 @@ function AppInner() {
   /* ── Logout ── */
   const handleLogout = async () => {
     await logout();
-    setAppState('auth');
+    setAppState('landing');
     setAnalysisData(null);
-    setAuthMode('login');
   };
+
+  /* ── Auth skip = demo ── */
+  const handleAuthSkip = () => handleDemo();
+
+  /* ── Auth success (from AuthPage callback) ── */
+  const handleAuthSuccess = () => {
+    setShowAuth(false);
+    handleDemo(); // take them to demo after login
+  };
+
+  if (authLoading) return (
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#030712' }}>
+      <div style={{ width: 40, height: 40, borderRadius: '50%', border: '3px solid rgba(99,102,241,0.15)', borderTop: '3px solid #6366f1', animation: 'spin 0.8s linear infinite' }} />
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  );
 
   return (
     <>
-      {/* Show spinner while session is being restored from localStorage/API */}
-      {authLoading && (
-        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-base)' }}>
-          <div style={{ width: 40, height: 40, borderRadius: '50%', border: '3px solid var(--primary-subtle)', borderTop: '3px solid var(--primary)', animation: 'spin 0.8s linear infinite' }} />
-          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-        </div>
-      )}
-
-      {/* Auth gate */}
-      {!authLoading && appState === 'auth' && (
-        <AuthPage
-          mode={authMode}
-          onSwitch={() => setAuthMode(m => m === 'login' ? 'signup' : 'login')}
-          onSkip={() => { handleDemo(); }}   // guests can skip straight to demo
-        />
-      )}
-
+      {/* Landing page — always visible unless in loading/dashboard */}
       {appState === 'landing' && (
         <LandingPage
           onUpload={handleUpload}
-          onDemo={handleDemo}
+          onDemo={handleGetStarted}
           error={error}
           onLogout={handleLogout}
         />
@@ -165,6 +228,16 @@ function AppInner() {
         <RootErrorBoundary>
           <Dashboard data={analysisData} onReset={handleReset} onLogout={handleLogout} />
         </RootErrorBoundary>
+      )}
+
+      {/* Auth modal overlay */}
+      {showAuth && (
+        <AuthModal
+          mode={authMode}
+          onClose={() => setShowAuth(false)}
+          onSwitch={() => setAuthMode(m => m === 'login' ? 'signup' : 'login')}
+          onSkip={handleAuthSkip}
+        />
       )}
 
       <RootErrorBoundary>
