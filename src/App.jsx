@@ -124,6 +124,7 @@ function AppInner() {
       setAppState('dashboard');
     } catch (err) {
       console.warn("Backend API unavailable, falling back to demo data:", err);
+      setError('Backend API not found. Loading Demo Data instead...');
       // 2. Fallback to demo data if backend is not running (e.g. GitHub Pages)
       setTimeout(async () => {
         try {
