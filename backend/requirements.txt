@@ -41,7 +41,7 @@ debugpy==1.8.14
 decorator==5.2.1
 defusedxml==0.7.1
 distro==1.9.0
-Django==5.2.12
+Django==5.2.14
 dnspython==2.8.0
 emnist==0.0
 entrypoints==0.4
