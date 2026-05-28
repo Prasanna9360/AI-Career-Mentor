@@ -1,34 +1,34 @@
 /**
- * LandingPage.jsx — v10
- * Premium multi-section AI startup landing page
- * Composes all 11 sections with sticky glassmorphism navbar
+ * LandingPage.jsx — v11
+ * - Resume upload section embedded directly (no login required)
+ * - All sign-in / auth UI removed
+ * - 12 sections total
  */
-import React, { useState, useEffect, useRef } from 'react';
-import HeroSection           from './landing/HeroSection';
-import StatsSection          from './landing/StatsSection';
-import AboutSection          from './landing/AboutSection';
-import FeaturesSection       from './landing/FeaturesSection';
-import HowItWorksSection     from './landing/HowItWorksSection';
-import DashboardPreviewSection from './landing/DashboardPreviewSection';
-import ServicesSection       from './landing/ServicesSection';
-import TestimonialsSection   from './landing/TestimonialsSection';
-import TechStackSection      from './landing/TechStackSection';
-import ContactSection        from './landing/ContactSection';
-import FooterSection         from './landing/FooterSection';
-import { useAuth }           from '../context/AuthContext';
+import React, { useState, useEffect } from 'react';
+import HeroSection              from './landing/HeroSection';
+import UploadResumeSection      from './landing/UploadResumeSection';
+import StatsSection             from './landing/StatsSection';
+import AboutSection             from './landing/AboutSection';
+import FeaturesSection          from './landing/FeaturesSection';
+import HowItWorksSection        from './landing/HowItWorksSection';
+import DashboardPreviewSection  from './landing/DashboardPreviewSection';
+import ServicesSection          from './landing/ServicesSection';
+import TestimonialsSection      from './landing/TestimonialsSection';
+import TechStackSection         from './landing/TechStackSection';
+import ContactSection           from './landing/ContactSection';
+import FooterSection            from './landing/FooterSection';
 
 const NAV_ITEMS = [
-  { label: 'About',      href: '#about' },
-  { label: 'Features',   href: '#features' },
+  { label: 'Upload',       href: '#upload' },
+  { label: 'Features',     href: '#features' },
   { label: 'How It Works', href: '#how-it-works' },
-  { label: 'Services',   href: '#services' },
-  { label: 'Contact',    href: '#contact' },
+  { label: 'Services',     href: '#services' },
+  { label: 'Contact',      href: '#contact' },
 ];
 
-function Navbar({ onGetStarted, onAnalyzeResume }) {
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const { isLoggedIn } = useAuth();
+function Navbar({ onUploadClick }) {
+  const [scrolled,    setScrolled]    = useState(false);
+  const [mobileOpen,  setMobileOpen]  = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -36,14 +36,19 @@ function Navbar({ onGetStarted, onAnalyzeResume }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const scrollToUpload = (e) => {
+    e.preventDefault();
+    setMobileOpen(false);
+    document.getElementById('upload')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <nav style={{
-      position: 'fixed', top: 0, left: 0, right: 0,
-      zIndex: 1000,
+      position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000,
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      padding: scrolled ? '0 clamp(1.5rem, 4vw, 3rem)' : '0 clamp(1.5rem, 4vw, 3rem)',
+      padding: '0 clamp(1.5rem, 4vw, 3rem)',
       height: scrolled ? '60px' : '72px',
-      background: scrolled ? 'rgba(3,7,18,0.92)' : 'transparent',
+      background: scrolled ? 'rgba(3,7,18,0.94)' : 'transparent',
       backdropFilter: scrolled ? 'blur(20px)' : 'none',
       borderBottom: scrolled ? '1px solid rgba(255,255,255,0.06)' : 'none',
       transition: 'all 0.35s cubic-bezier(0.16,1,0.3,1)',
@@ -70,10 +75,8 @@ function Navbar({ onGetStarted, onAnalyzeResume }) {
         }}>v9</span>
       </a>
 
-      {/* Desktop nav */}
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: '0.25rem',
-      }} className="desktop-nav">
+      {/* Desktop nav links */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }} className="desktop-nav">
         {NAV_ITEMS.map(item => (
           <a
             key={item.label}
@@ -92,12 +95,11 @@ function Navbar({ onGetStarted, onAnalyzeResume }) {
         ))}
       </div>
 
-      {/* CTA buttons */}
+      {/* Desktop CTA */}
       <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center' }} className="desktop-cta">
         <a
           href="https://github.com/Prasannaganesann/AI-Career-Mentor"
-          target="_blank"
-          rel="noopener noreferrer"
+          target="_blank" rel="noopener noreferrer"
           style={{
             padding: '7px 14px', borderRadius: '8px',
             border: '1px solid rgba(255,255,255,0.1)',
@@ -112,7 +114,7 @@ function Navbar({ onGetStarted, onAnalyzeResume }) {
           🐙 GitHub
         </a>
         <button
-          onClick={onGetStarted}
+          onClick={scrollToUpload}
           style={{
             padding: '8px 20px', borderRadius: '8px', border: 'none',
             background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
@@ -124,7 +126,7 @@ function Navbar({ onGetStarted, onAnalyzeResume }) {
           onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(99,102,241,0.55)'; }}
           onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 2px 12px rgba(99,102,241,0.4)'; }}
         >
-          {isLoggedIn ? '📊 Dashboard' : '🚀 Get Started'}
+          📄 Analyze Resume
         </button>
       </div>
 
@@ -133,18 +135,16 @@ function Navbar({ onGetStarted, onAnalyzeResume }) {
         className="mobile-menu-btn"
         onClick={() => setMobileOpen(o => !o)}
         style={{
-          display: 'none',
-          width: '36px', height: '36px', borderRadius: '8px',
+          display: 'none', width: '36px', height: '36px', borderRadius: '8px',
           background: 'rgba(255,255,255,0.06)',
           border: '1px solid rgba(255,255,255,0.1)',
-          color: '#94a3b8', fontSize: '1.2rem',
-          cursor: 'pointer',
+          color: '#94a3b8', fontSize: '1.2rem', cursor: 'pointer',
         }}
       >
         {mobileOpen ? '✕' : '☰'}
       </button>
 
-      {/* Mobile menu */}
+      {/* Mobile dropdown */}
       {mobileOpen && (
         <div style={{
           position: 'absolute', top: '100%', left: 0, right: 0,
@@ -159,17 +159,13 @@ function Navbar({ onGetStarted, onAnalyzeResume }) {
               key={item.label}
               href={item.href}
               onClick={() => setMobileOpen(false)}
-              style={{
-                padding: '10px', fontSize: '0.9rem',
-                color: '#94a3b8', textDecoration: 'none',
-                borderRadius: '8px', transition: 'all 0.2s',
-              }}
+              style={{ padding: '10px', fontSize: '0.9rem', color: '#94a3b8', textDecoration: 'none', borderRadius: '8px' }}
             >
               {item.label}
             </a>
           ))}
           <button
-            onClick={() => { setMobileOpen(false); onGetStarted(); }}
+            onClick={scrollToUpload}
             style={{
               marginTop: '0.5rem', padding: '12px',
               background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
@@ -178,7 +174,7 @@ function Navbar({ onGetStarted, onAnalyzeResume }) {
               cursor: 'pointer',
             }}
           >
-            🚀 Get Started Free
+            📄 Analyze My Resume — Free
           </button>
         </div>
       )}
@@ -194,38 +190,25 @@ function Navbar({ onGetStarted, onAnalyzeResume }) {
   );
 }
 
-export default function LandingPage({ onUpload, onDemo, error, onLogout }) {
-  // Scroll to upload / get started → triggers demo
-  const handleGetStarted = () => {
-    // Scroll to bottom / CTA or trigger demo
-    onDemo && onDemo();
-  };
-
-  const handleAnalyzeResume = () => {
-    // trigger upload flow
-    onDemo && onDemo();
-  };
-
-  const handleExploreCareers = () => {
-    const el = document.getElementById('features');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  };
+export default function LandingPage({ onUpload, onDemo, error }) {
+  const scrollToUpload = () =>
+    document.getElementById('upload')?.scrollIntoView({ behavior: 'smooth' });
 
   return (
-    <div style={{
-      background: '#030712',
-      minHeight: '100vh',
-      overflowX: 'hidden',
-    }}>
-      {/* Sticky Navbar */}
-      <Navbar onGetStarted={handleGetStarted} onAnalyzeResume={handleAnalyzeResume} />
+    <div style={{ background: '#030712', minHeight: '100vh', overflowX: 'hidden' }}>
+      {/* Sticky Navbar — no auth buttons */}
+      <Navbar onUploadClick={scrollToUpload} />
 
-      {/* All Sections */}
+      {/* Hero — CTA scrolls to upload */}
       <HeroSection
-        onGetStarted={handleGetStarted}
-        onAnalyzeResume={handleAnalyzeResume}
-        onExploreCareers={handleExploreCareers}
+        onGetStarted={scrollToUpload}
+        onAnalyzeResume={scrollToUpload}
+        onExploreCareers={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
       />
+
+      {/* ★ Upload section — embedded directly, no login needed */}
+      <UploadResumeSection onUpload={onUpload} />
+
       <StatsSection />
       <AboutSection />
       <FeaturesSection />
@@ -234,10 +217,10 @@ export default function LandingPage({ onUpload, onDemo, error, onLogout }) {
       <ServicesSection />
       <TestimonialsSection />
       <TechStackSection />
-      <ContactSection onGetStarted={handleGetStarted} />
+      <ContactSection onGetStarted={scrollToUpload} />
       <FooterSection />
 
-      {/* Error banner (if any) */}
+      {/* Error banner */}
       {error && (
         <div style={{
           position: 'fixed', bottom: '2rem', right: '2rem', zIndex: 9000,
@@ -254,7 +237,6 @@ export default function LandingPage({ onUpload, onDemo, error, onLogout }) {
         </div>
       )}
 
-      {/* Smooth scroll behavior */}
       <style>{`
         html { scroll-behavior: smooth; }
         * { box-sizing: border-box; }

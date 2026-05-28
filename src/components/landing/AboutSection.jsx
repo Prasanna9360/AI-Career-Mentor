@@ -1,6 +1,5 @@
 /**
- * AboutSection.jsx
- * Platform vision, AI-powered guidance, mission
+ * AboutSection.jsx — v2 (fixed: moved useState out of .map())
  */
 import React, { useRef, useState, useEffect } from 'react';
 
@@ -35,6 +34,45 @@ const PILLARS = [
   },
 ];
 
+/* Extracted to proper component so useState is valid */
+function PillarCard({ pillar, index, visible }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <div
+      key={pillar.title}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        padding: '1.75rem',
+        background: hovered ? pillar.gradient : 'rgba(15,23,42,0.5)',
+        border: `1px solid ${hovered ? pillar.color + '40' : 'rgba(255,255,255,0.07)'}`,
+        borderRadius: '16px',
+        transition: 'all 0.3s ease',
+        transform: hovered ? 'translateY(-4px)' : 'translateY(0)',
+        opacity: visible ? 1 : 0,
+        animation: visible ? `fadeSlideUp 0.6s ease ${0.3 + index * 0.1}s both` : 'none',
+        backdropFilter: 'blur(10px)',
+        cursor: 'default',
+      }}
+    >
+      <div style={{
+        fontSize: '2rem', marginBottom: '1rem',
+        filter: hovered ? `drop-shadow(0 0 10px ${pillar.color})` : 'none',
+        transition: 'filter 0.3s ease',
+      }}>{pillar.icon}</div>
+      <h3 style={{
+        fontFamily: "'Space Grotesk', sans-serif",
+        fontSize: '1.05rem', fontWeight: 700,
+        color: hovered ? pillar.color : '#e2e8f0',
+        marginBottom: '0.6rem', transition: 'color 0.3s ease',
+      }}>{pillar.title}</h3>
+      <p style={{ fontSize: '0.88rem', color: '#64748b', lineHeight: 1.65 }}>
+        {pillar.desc}
+      </p>
+    </div>
+  );
+}
+
 export default function AboutSection() {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
@@ -42,7 +80,7 @@ export default function AboutSection() {
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([e]) => { if (e.isIntersecting) setVisible(true); },
-      { threshold: 0.15 }
+      { threshold: 0.1 }
     );
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
@@ -55,11 +93,13 @@ export default function AboutSection() {
       position: 'relative',
     }}>
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-        {/* Header */}
+        {/* Header — responsive 2-col → 1-col */}
         <div style={{
-          display: 'grid', gridTemplateColumns: '1fr 1fr',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: '3rem', alignItems: 'center', marginBottom: '4rem',
-        }} className="about-header-grid">
+        }}>
+          {/* Left: text */}
           <div style={{
             opacity: visible ? 1 : 0,
             transform: visible ? 'translateX(0)' : 'translateX(-30px)',
@@ -90,20 +130,18 @@ export default function AboutSection() {
                 AI Career Advisor
               </span>
             </h2>
-            <p style={{
-              color: '#64748b', fontSize: '1.05rem', lineHeight: 1.75, marginBottom: '1rem',
-            }}>
-              AI Career Mentor was born from a simple frustration: career guidance is expensive, 
-              biased, and often irrelevant for tech students. We built an open-source platform 
+            <p style={{ color: '#64748b', fontSize: '1.05rem', lineHeight: 1.75, marginBottom: '1rem' }}>
+              AI Career Mentor was born from a simple frustration: career guidance is expensive,
+              biased, and often irrelevant for tech students. We built an open-source platform
               that gives every student access to the same AI-powered insights used by top recruiters.
             </p>
             <p style={{ color: '#475569', fontSize: '0.95rem', lineHeight: 1.7 }}>
-              From resume parsing to career roadmaps, salary benchmarking to interview preparation — 
+              From resume parsing to career roadmaps, salary benchmarking to interview preparation —
               everything is powered by Groq's lightning-fast AI and backed by real industry data.
             </p>
           </div>
 
-          {/* Stats card on the right */}
+          {/* Right: accuracy card */}
           <div style={{
             opacity: visible ? 1 : 0,
             transform: visible ? 'translateX(0)' : 'translateX(30px)',
@@ -118,7 +156,11 @@ export default function AboutSection() {
               boxShadow: '0 24px 48px rgba(0,0,0,0.4)',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.5rem' }}>
-                <div style={{ width: 40, height: 40, borderRadius: '10px', background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>🧠</div>
+                <div style={{
+                  width: 40, height: 40, borderRadius: '10px',
+                  background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem',
+                }}>🧠</div>
                 <div>
                   <div style={{ fontFamily: "'Space Grotesk'", fontWeight: 700, color: '#f8fafc', fontSize: '0.95rem' }}>AI Career Mentor</div>
                   <div style={{ fontSize: '0.75rem', color: '#475569' }}>Version 9.0 · Free & Open Source</div>
@@ -149,54 +191,18 @@ export default function AboutSection() {
           </div>
         </div>
 
-        {/* Pillars grid */}
+        {/* Pillars grid — uses proper PillarCard component */}
         <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
+          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
           gap: '1.25rem',
         }}>
-          {PILLARS.map((pillar, i) => {
-            const [hovered, setHovered] = useState(false);
-            return (
-              <div
-                key={pillar.title}
-                onMouseEnter={() => setHovered(true)}
-                onMouseLeave={() => setHovered(false)}
-                style={{
-                  padding: '1.75rem',
-                  background: hovered ? pillar.gradient : 'rgba(15,23,42,0.5)',
-                  border: `1px solid ${hovered ? pillar.color + '40' : 'rgba(255,255,255,0.07)'}`,
-                  borderRadius: '16px',
-                  transition: 'all 0.3s ease',
-                  transform: hovered ? 'translateY(-4px)' : 'translateY(0)',
-                  opacity: visible ? 1 : 0,
-                  animation: visible ? `fadeSlideUp 0.6s ease ${0.3 + i * 0.1}s both` : 'none',
-                  backdropFilter: 'blur(10px)',
-                }}
-              >
-                <div style={{
-                  fontSize: '2rem', marginBottom: '1rem',
-                  filter: hovered ? `drop-shadow(0 0 10px ${pillar.color})` : 'none',
-                  transition: 'filter 0.3s ease',
-                }}>{pillar.icon}</div>
-                <h3 style={{
-                  fontFamily: "'Space Grotesk', sans-serif",
-                  fontSize: '1.05rem', fontWeight: 700,
-                  color: hovered ? pillar.color : '#e2e8f0',
-                  marginBottom: '0.6rem', transition: 'color 0.3s ease',
-                }}>{pillar.title}</h3>
-                <p style={{ fontSize: '0.88rem', color: '#64748b', lineHeight: 1.65 }}>
-                  {pillar.desc}
-                </p>
-              </div>
-            );
-          })}
+          {PILLARS.map((pillar, i) => (
+            <PillarCard key={pillar.title} pillar={pillar} index={i} visible={visible} />
+          ))}
         </div>
       </div>
 
       <style>{`
-        @media (max-width: 768px) {
-          .about-header-grid { grid-template-columns: 1fr !important; }
-        }
         @keyframes fadeSlideUp {
           from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
