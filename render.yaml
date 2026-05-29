@@ -8,9 +8,7 @@ services:
     plan: free
     envVars:
       - key: GROQ_API_KEY
-        sync: false        # Set manually in Render dashboard
+        sync: false
       - key: FRONTEND_URL
         value: https://prasannaganesann.github.io
-      - key: PYTHON_VERSION
-        value: "3.11.0"
-    healthCheckPath: /api/health
+    healthCheckPath: /health

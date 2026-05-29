@@ -1,14 +1,16 @@
 """
-main.py  (v5 — AI Career Intelligence System)
+main.py  (v6 — AI Career Intelligence System)
 ----------------------------------------------
 FastAPI REST API endpoints:
+  GET  /health         - Root health check (for Render)
+  GET  /api/health     - Health check
   POST /api/upload     - Upload PDF resume → full career analysis + resume audit
   POST /api/match-jd   - Paste job description → JD vs resume comparison
   POST /api/ai-chat    - Groq LLM-powered career chatbot (context-aware)
   POST /api/chat       - Rule-based chatbot (legacy fallback)
-  GET  /api/health     - Health check
 """
 
+import os
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -29,10 +31,8 @@ from linkedin_optimizer import analyze_linkedin_profile
 app = FastAPI(
     title="AI Career Intelligence System API",
     description="Resume analysis, JD matching, Groq AI chat, skill gap insights, career roadmap.",
-    version="5.0.0",
+    version="6.0.0",
 )
-
-import os
 
 app.add_middleware(
     CORSMiddleware,
@@ -130,9 +130,21 @@ class LinkedInOptRequest(BaseModel):
 # ---------------------------------------------------------------------------
 # Routes
 # ---------------------------------------------------------------------------
+@app.get("/")
+def root():
+    """Root endpoint — required for Render health check."""
+    return {"status": "ok", "service": "AI Career Intelligence System API", "version": "6.0.0"}
+
+
+@app.get("/health")
+def health_root():
+    """Root-level health check (Render default)."""
+    return {"status": "ok"}
+
+
 @app.get("/api/health")
 def health_check():
-    return {"status": "ok", "service": "AI Career Intelligence System API", "version": "5.0.0"}
+    return {"status": "ok", "service": "AI Career Intelligence System API", "version": "6.0.0"}
 
 
 @app.post("/api/upload")

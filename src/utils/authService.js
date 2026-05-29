@@ -5,9 +5,12 @@
  * Falls back gracefully if the auth server is offline (demo mode).
  */
 
-const AUTH_BASE = 'http://localhost:3001/api/auth';
+// Auth server URL — reads from VITE_AUTH_URL env var (set in GitHub Secrets if auth is deployed)
+// Falls back to empty string → all auth calls will gracefully fail (demo/offline mode)
+const AUTH_BASE = (import.meta.env.VITE_AUTH_URL || '') + '/api/auth';
 const USER_KEY  = 'caai_user';
 const TOKEN_KEY = 'caai_token';
+
 
 /* ── LocalStorage helpers ── */
 export function getStoredUser()    { try { return JSON.parse(localStorage.getItem(USER_KEY)) || null; } catch { return null; } }
