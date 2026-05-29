@@ -32,12 +32,20 @@ app = FastAPI(
     version="5.0.0",
 )
 
+import os
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],          # Dev: allow all — lock down in production
+    allow_origins=[
+        "https://prasannaganesann.github.io",  # GitHub Pages production
+        "http://localhost:5173",               # Vite dev server
+        "http://localhost:3000",               # Alternative local dev
+        "http://127.0.0.1:5173",
+        os.getenv("FRONTEND_URL", ""),         # Any additional domain via env var
+    ],
     allow_credentials=False,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"],
 )
 
 

@@ -37,11 +37,19 @@ jobs:
       - name: Build project
         run: npm run build
         env:
-          # The frontend only needs these Vite vars for the static site
-          VITE_AUTH_URL: ${{ secrets.VITE_AUTH_URL || 'http://localhost:3001' }}
-          VITE_API_URL: ${{ secrets.VITE_API_URL || 'http://localhost:8000' }}
-          VITE_GROQ_API_KEY: ${{ secrets.VITE_GROQ_API_KEY || '' }}
-          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID || '' }}
+          # Groq API key for client-side AI analysis (must be set in GitHub Secrets)
+          # Go to: Settings → Secrets and variables → Actions → New repository secret
+          # Name: VITE_GROQ_API_KEY  |  Value: your Groq key from console.groq.com
+          VITE_GROQ_API_KEY: ${{ secrets.VITE_GROQ_API_KEY }}
+
+          # Backend API URL (set this to your Render deployment URL once deployed)
+          # Example: https://ai-career-mentor-api.onrender.com/api
+          # Until backend is deployed, leave unset — frontend will use client-side AI
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+
+          # Auth service URL (optional — auth is currently disabled in UI)
+          VITE_AUTH_URL: ${{ secrets.VITE_AUTH_URL }}
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
 
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v5

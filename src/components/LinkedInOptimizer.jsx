@@ -6,6 +6,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { computeProfileScore } from '../utils/profileAnalyzer';
+import { optimizeLinkedIn } from '../utils/api';
 
 // ── Impact badge styles ────────────────────────────────────────────────────
 const IMPACT = {
@@ -151,15 +152,16 @@ export default function LinkedInOptimizer({ data }) {
   const handleOptimize = async (useUrl) => {
     setLoading(true); setError('');
     try {
-      const res = await fetch('http://localhost:8000/api/linkedin-optimize', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: useUrl ? url : '', resume_skills: extracted_skills, job_role: role }),
-      });
-      const d = await res.json();
+      const d = await optimizeLinkedIn(
+        useUrl ? url : '',
+        extracted_skills,
+        role
+      );
       if (d.error) setError(d.analysis || 'An error occurred.');
       else setAiResult(d);
-    } catch { setError('Failed to connect to the LinkedIn Optimizer.'); }
+    } catch (err) {
+      setError(err.message || 'Failed to connect to the LinkedIn Optimizer. Make sure the backend is running.');
+    }
     finally { setLoading(false); }
   };
 

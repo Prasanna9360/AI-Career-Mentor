@@ -16,6 +16,52 @@ import CoursesPanel from './CoursesPanel';
 import { detectRole, detectExperienceLevel, computeWeightedMatch, ROLE_BENCHMARKS } from '../utils/roleIntelligence';
 import CopilotTrigger from './CopilotTrigger';
 
+// ---------------------------------------------------------------------------
+// Client-side JD matching fallback (used when backend is unavailable)
+// ---------------------------------------------------------------------------
+const MASTER_SKILLS = [
+  'python','java','javascript','typescript','c++','c#','r','scala','go','rust','kotlin','swift','php','ruby','matlab','golang',
+  'html','css','react','angular','vue','nodejs','node.js','express','django','flask','fastapi','rest api','graphql','responsive design',
+  'machine learning','deep learning','nlp','computer vision','tensorflow','pytorch','keras','scikit-learn','transformers','openai','llm',
+  'sql','mysql','postgresql','mongodb','redis','spark','hadoop','pandas','numpy','matplotlib','tableau','power bi','data visualization',
+  'data analysis','data engineering','etl','airflow','kafka','excel',
+  'aws','azure','gcp','docker','kubernetes','terraform','ansible','jenkins','ci/cd','devops','linux','bash','git','github','gitlab',
+  'cybersecurity','network security','penetration testing','cryptography','siem','incident response','firewall',
+  'selenium','unit testing','test automation','api testing','postman','jira','agile','scrum',
+  'figma','wireframing','user research','prototyping','ui design','ux design','adobe xd','design systems',
+  'product strategy','roadmapping','stakeholder management','a/b testing','communication',
+  'react native','flutter','firebase','mobile ui','solidity','ethereum','smart contracts','blockchain',
+  'technical writing','documentation','markdown','mlops','cloud computing','microservices','api design',
+];
+
+function clientSideMatchJD(jdText, resumeSkills) {
+  const jdLower = jdText.toLowerCase();
+  const jdSkills = MASTER_SKILLS.filter(skill => jdLower.includes(skill));
+  if (jdSkills.length === 0) {
+    throw new Error('Could not extract recognizable skills from this job description. Make sure it contains technical skill terms.');
+  }
+  const resumeSet = new Set(resumeSkills.map(s => s.toLowerCase()));
+  const matched = jdSkills.filter(s => resumeSet.has(s));
+  const missing = jdSkills.filter(s => !resumeSet.has(s));
+  const match_percentage = jdSkills.length > 0 ? Math.round((matched.length / jdSkills.length) * 100) : 0;
+  let headline;
+  if (match_percentage >= 75) headline = `🚀 Excellent! You match ${match_percentage}% of this job description. Apply with confidence!`;
+  else if (match_percentage >= 50) headline = `⭐ You are ${match_percentage}% aligned with this JD. A few targeted skills would make you a top candidate.`;
+  else if (match_percentage >= 30) headline = `📈 You match ${match_percentage}% of this JD. Focus on the missing skills below to become competitive.`;
+  else headline = `💪 You match ${match_percentage}% of this JD. Use this as a gap analysis to plan your learning path.`;
+  return {
+    jd_skills: jdSkills,
+    matched_skills: matched,
+    missing_skills: missing,
+    match_percentage,
+    headline,
+    closest_job_role: null,
+    improvement_suggestions: missing.slice(0, 5).map(s => `Add "${s}" to your resume — it appears in the job description.`),
+    recommended_courses: [],
+    _client_side: true,
+  };
+}
+
 const EXAMPLE_JD = `We are looking for a Data Scientist to join our team.
 
 Requirements:
@@ -91,21 +137,32 @@ export default function JDMatcher({ resumeSkills = [], topJob = null }) {
     setLoading(true);
     setResult(null);
 
+    let data;
     try {
-      const data = await matchJD(jdText, resumeSkills);
+      data = await matchJD(jdText, resumeSkills);
+    } catch (backendErr) {
+      // Backend unavailable — fall back to client-side keyword matching
+      console.warn('[JDMatcher] Backend unavailable, using client-side matching:', backendErr.message);
+      try {
+        data = clientSideMatchJD(jdText, resumeSkills);
+      } catch (clientErr) {
+        setError(clientErr.message || 'Failed to analyze job description. Please try again.');
+        setLoading(false);
+        return;
+      }
+    }
 
-      // ── Enrich with client-side role intelligence ──
+    // ── Enrich with client-side role intelligence ──
+    try {
       const detectedRole  = detectRole(jdText);
       const expLevel      = detectExperienceLevel(jdText);
       const allJdSkills   = [...(data.matched_skills || []), ...(data.missing_skills || [])];
       const weightedStats = computeWeightedMatch(allJdSkills, resumeSkills, detectedRole);
-
       setResult({ ...data, detectedRole, expLevel, weightedStats });
-    } catch (err) {
-      setError(err.message || 'Failed to analyze job description. Try again.');
-    } finally {
-      setLoading(false);
+    } catch {
+      setResult(data);
     }
+    setLoading(false);
   };
 
   const handleLoadExample = () => {

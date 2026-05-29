@@ -4,12 +4,29 @@ skill_extractor.py
 Extracts skills from resume text using:
 1. spaCy NLP token matching (preferred)
 2. Keyword-based regex fallback
+
+Performance fix: spaCy model is loaded ONCE at module import time,
+not on every function call. This prevents a 2–4s cold start per request.
 """
 
 import re
 from typing import List
 
-# Master list of all trackable skills (lowercased)
+# ── spaCy: load model ONCE at startup ─────────────────────────────────────
+# If model is unavailable, NLP-based extraction gracefully falls back to
+# keyword matching. No performance cost after the first load.
+try:
+    import spacy
+    _NLP = spacy.load("en_core_web_sm")
+    _SPACY_AVAILABLE = True
+    print("[skill_extractor] spaCy model loaded successfully.")
+except Exception as _e:
+    _NLP = None
+    _SPACY_AVAILABLE = False
+    print(f"[skill_extractor] spaCy unavailable ({_e}). Using keyword fallback.")
+
+
+# Master list of all trackable skills (lowercased, deduplicated)
 MASTER_SKILLS = [
     # Programming Languages
     "python", "java", "javascript", "typescript", "c++", "c#", "r", "scala", "go", "rust",
@@ -53,41 +70,28 @@ MASTER_SKILLS = [
     # MLOps / Infra
     "mlops", "cost optimization", "performance tuning", "backup & recovery",
     # Mobile
-    "react native", "flutter", "firebase", "mobile ui",
-    # Certificates / Other
-    "mobile ui", "push notifications", "app store deployment", "python",
+    "react native", "flutter", "firebase", "mobile ui", "push notifications", "app store deployment",
 ]
 
+# Deduplicate while preserving order
+_seen = set()
+MASTER_SKILLS = [s for s in MASTER_SKILLS if not (_seen.add(s) or s in _seen)]
 
 
 def extract_skills_spacy(text: str) -> List[str]:
-    """Use spaCy to tokenize and match skills against master list."""
-    try:
-        import spacy
-        # Load small English model (must be installed separately)
-        nlp = spacy.load("en_core_web_sm")
-        doc = nlp(text.lower())
-        tokens = set()
-
-        # Single token matches
-        for token in doc:
-            tokens.add(token.text)
-
-        # Bigram matches
-        words = [token.text for token in doc]
-        for i in range(len(words) - 1):
-            tokens.add(f"{words[i]} {words[i+1]}")
-
-        found = []
-        text_lower = text.lower()
-        for skill in MASTER_SKILLS:
-            if skill in text_lower:
-                found.append(skill)
-
-        return list(set(found))
-    except Exception as e:
-        print(f"[spaCy] Not available, using fallback: {e}")
+    """Use the pre-loaded spaCy NLP model to extract skills."""
+    if not _SPACY_AVAILABLE or _NLP is None:
         return extract_skills_keyword(text)
+
+    doc = _NLP(text.lower())
+    text_lower = text.lower()
+    found = []
+
+    for skill in MASTER_SKILLS:
+        if skill in text_lower:
+            found.append(skill)
+
+    return list(set(found))
 
 
 def extract_skills_keyword(text: str) -> List[str]:
@@ -112,10 +116,10 @@ def extract_skills_keyword(text: str) -> List[str]:
 def extract_skills(text: str) -> List[str]:
     """
     Main entry point for skill extraction.
-    Tries spaCy first, falls back to keyword matching.
+    Tries spaCy first (if available), falls back to keyword matching.
     """
     if not text or not text.strip():
         return []
-    skills = extract_skills_spacy(text)
+    skills = extract_skills_spacy(text) if _SPACY_AVAILABLE else extract_skills_keyword(text)
     # Sort alphabetically for consistent output
     return sorted(skills)

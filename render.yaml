@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: ai-career-mentor-api
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt && python -m spacy download en_core_web_sm
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    plan: free
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false        # Set manually in Render dashboard
+      - key: FRONTEND_URL
+        value: https://prasannaganesann.github.io
+      - key: PYTHON_VERSION
+        value: "3.11.0"
+    healthCheckPath: /api/health

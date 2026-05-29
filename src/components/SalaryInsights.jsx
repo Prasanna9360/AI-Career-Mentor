@@ -5,9 +5,41 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
+import { API_BASE } from '../utils/config';
 
-const API_BASE = '/api';
+// ---------------------------------------------------------------------------
+// Static fallback salary data (subset of jobs.json — shown when backend is offline)
+// ---------------------------------------------------------------------------
+const STATIC_SALARY_DATA = [
+  { id: 'ai_engineer',          title: 'AI Engineer',             icon: '🤖', experience_level: 'Advanced',     salary_entry: '$100k', salary_mid: '$160k', salary_senior: '$210k', demand: 'Extremely High', demand_trend: 'Rising',  remote_friendly: true,  top_companies: ['OpenAI','Microsoft','Google DeepMind','Anthropic'] },
+  { id: 'ml_engineer',          title: 'Machine Learning Engineer',icon: '⚡', experience_level: 'Advanced',     salary_entry: '$90k',  salary_mid: '$145k', salary_senior: '$195k', demand: 'Extremely High', demand_trend: 'Rising',  remote_friendly: true,  top_companies: ['Amazon','Google','Microsoft','Tesla'] },
+  { id: 'data_scientist',       title: 'Data Scientist',           icon: '🔬', experience_level: 'Intermediate', salary_entry: '$70k',  salary_mid: '$115k', salary_senior: '$155k', demand: 'Very High',     demand_trend: 'Rising',  remote_friendly: true,  top_companies: ['Google','Amazon','Meta','Netflix'] },
+  { id: 'sre',                  title: 'Site Reliability Engineer', icon: '⚙️', experience_level: 'Advanced',    salary_entry: '$95k',  salary_mid: '$155k', salary_senior: '$205k', demand: 'Very High',     demand_trend: 'Rising',  remote_friendly: true,  top_companies: ['Google','Netflix','Cloudflare','Stripe'] },
+  { id: 'cloud_architect',      title: 'Cloud Architect',           icon: '🏛️', experience_level: 'Advanced',    salary_entry: '$110k', salary_mid: '$170k', salary_senior: '$230k', demand: 'High',          demand_trend: 'Rising',  remote_friendly: true,  top_companies: ['Google','AWS','Microsoft','Deloitte'] },
+  { id: 'devops_engineer',      title: 'DevOps Engineer',           icon: '🔄', experience_level: 'Intermediate', salary_entry: '$70k',  salary_mid: '$120k', salary_senior: '$170k', demand: 'Very High',     demand_trend: 'Rising',  remote_friendly: true,  top_companies: ['Accenture','ThoughtWorks','Atlassian','HashiCorp'] },
+  { id: 'cloud_engineer',       title: 'Cloud Engineer',            icon: '☁️', experience_level: 'Intermediate', salary_entry: '$75k',  salary_mid: '$125k', salary_senior: '$175k', demand: 'High',          demand_trend: 'Rising',  remote_friendly: true,  top_companies: ['AWS','Azure','Google Cloud','Oracle Cloud'] },
+  { id: 'blockchain_developer', title: 'Blockchain Developer',      icon: '⛓️', experience_level: 'Advanced',    salary_entry: '$88k',  salary_mid: '$150k', salary_senior: '$210k', demand: 'High',          demand_trend: 'Rising',  remote_friendly: true,  top_companies: ['Polygon','Coinbase','Binance','WazirX'] },
+  { id: 'software_engineer',    title: 'Software Engineer',         icon: '💻', experience_level: 'Beginner',    salary_entry: '$70k',  salary_mid: '$115k', salary_senior: '$160k', demand: 'Very High',     demand_trend: 'Stable',  remote_friendly: true,  top_companies: ['Microsoft','Google','Apple','Amazon'] },
+  { id: 'fullstack_developer',  title: 'Full Stack Developer',      icon: '🧱', experience_level: 'Intermediate', salary_entry: '$65k',  salary_mid: '$110k', salary_senior: '$160k', demand: 'Very High',     demand_trend: 'Stable',  remote_friendly: true,  top_companies: ['Wipro','Capgemini','IBM','EPAM'] },
+  { id: 'backend_developer',    title: 'Backend Developer',         icon: '⚙️', experience_level: 'Intermediate', salary_entry: '$65k',  salary_mid: '$115k', salary_senior: '$165k', demand: 'Very High',     demand_trend: 'Stable',  remote_friendly: false, top_companies: ['TCS','Infosys','Wipro','HCL'] },
+  { id: 'frontend_developer',   title: 'Frontend Developer',        icon: '🎨', experience_level: 'Beginner',    salary_entry: '$60k',  salary_mid: '$100k', salary_senior: '$150k', demand: 'High',          demand_trend: 'Stable',  remote_friendly: true,  top_companies: ['Zoho','Freshworks','Razorpay','Swiggy'] },
+  { id: 'data_engineer',        title: 'Data Engineer',             icon: '🔧', experience_level: 'Intermediate', salary_entry: '$75k',  salary_mid: '$125k', salary_senior: '$175k', demand: 'Very High',     demand_trend: 'Rising',  remote_friendly: true,  top_companies: ['Flipkart','Razorpay','Juspay'] },
+  { id: 'cybersecurity_analyst',title: 'Cybersecurity Analyst',     icon: '🔐', experience_level: 'Intermediate', salary_entry: '$68k',  salary_mid: '$120k', salary_senior: '$170k', demand: 'Very High',     demand_trend: 'Rising',  remote_friendly: true,  top_companies: ['CrowdStrike','Palo Alto Networks','Cisco'] },
+  { id: 'data_analyst',         title: 'Data Analyst',              icon: '📊', experience_level: 'Beginner',    salary_entry: '$50k',  salary_mid: '$80k',  salary_senior: '$115k', demand: 'High',          demand_trend: 'Stable',  remote_friendly: true,  top_companies: ['Infosys','Deloitte','Accenture'] },
+  { id: 'product_manager',      title: 'Product Manager',           icon: '📋', experience_level: 'Intermediate', salary_entry: '$80k',  salary_mid: '$135k', salary_senior: '$195k', demand: 'High',          demand_trend: 'Stable',  remote_friendly: false, top_companies: ['Flipkart','Swiggy','Paytm','OYO'] },
+  { id: 'mobile_developer',     title: 'Mobile App Developer',      icon: '📱', experience_level: 'Intermediate', salary_entry: '$65k',  salary_mid: '$110k', salary_senior: '$155k', demand: 'High',          demand_trend: 'Stable',  remote_friendly: true,  top_companies: ['Zoho','Paytm','PhonePe','CRED'] },
+  { id: 'uiux_designer',        title: 'UI/UX Designer',            icon: '🎭', experience_level: 'Beginner',    salary_entry: '$50k',  salary_mid: '$90k',  salary_senior: '$140k', demand: 'High',          demand_trend: 'Rising',  remote_friendly: true,  top_companies: ['Zoho','Freshworks','ShareChat','Dream11'] },
+  { id: 'qa_engineer',          title: 'QA / Test Engineer',        icon: '🧪', experience_level: 'Beginner',    salary_entry: '$45k',  salary_mid: '$80k',  salary_senior: '$120k', demand: 'High',          demand_trend: 'Stable',  remote_friendly: true,  top_companies: ['Infosys','Wipro','TCS','Capgemini'] },
+  { id: 'web_developer',        title: 'Web Developer',             icon: '🌐', experience_level: 'Beginner',    salary_entry: '$55k',  salary_mid: '$95k',  salary_senior: '$140k', demand: 'High',          demand_trend: 'Stable',  remote_friendly: true,  top_companies: ['TCS','Infosys','Cognizant','Hexaware'] },
+  { id: 'business_analyst',     title: 'Business Analyst',          icon: '📈', experience_level: 'Intermediate', salary_entry: '$55k',  salary_mid: '$95k',  salary_senior: '$140k', demand: 'High',          demand_trend: 'Stable',  remote_friendly: false, top_companies: ['Accenture','Deloitte','McKinsey','EY'] },
+  { id: 'database_administrator',title:'Database Administrator',    icon: '🗄️', experience_level: 'Intermediate', salary_entry: '$60k',  salary_mid: '$100k', salary_senior: '$140k', demand: 'Stable',        demand_trend: 'Stable',  remote_friendly: false, top_companies: ['Oracle','SAP','IBM','TCS'] },
+  { id: 'network_engineer',     title: 'Network Engineer',          icon: '🌐', experience_level: 'Intermediate', salary_entry: '$55k',  salary_mid: '$95k',  salary_senior: '$140k', demand: 'Stable',        demand_trend: 'Stable',  remote_friendly: false, top_companies: ['Cisco','Juniper','Arista Networks'] },
+  { id: 'embedded_engineer',    title: 'Embedded Systems Engineer', icon: '🔌', experience_level: 'Advanced',    salary_entry: '$65k',  salary_mid: '$115k', salary_senior: '$165k', demand: 'High',          demand_trend: 'Rising',  remote_friendly: false, top_companies: ['Qualcomm','Intel','Texas Instruments'] },
+  { id: 'technical_writer',     title: 'Technical Writer',          icon: '✍️', experience_level: 'Beginner',    salary_entry: '$48k',  salary_mid: '$80k',  salary_senior: '$120k', demand: 'Stable',        demand_trend: 'Stable',  remote_friendly: true,  top_companies: ['Atlassian','Stripe','Twilio','Postman'] },
+];
+
 const USD_TO_INR = 83;
+
 
 // Parse "$90k" → number (USD thousands)
 function parseSalary(str) {
@@ -77,11 +109,31 @@ export default function SalaryInsights({ extractedSkills = [], bestFitJobId }) {
   const [selected, setSelected] = useState(null);
   const [currency, setCurrency] = useState('BOTH');  // USD | INR | BOTH
 
+  const [usingFallback, setUsingFallback] = useState(false);
+
   useEffect(() => {
-    fetch(`${API_BASE}/salary-insights`)
-      .then(r => r.json())
-      .then(d => { setSalaryData(d.salary_data || []); setLoading(false); })
-      .catch(() => setLoading(false));
+    let cancelled = false;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 5000); // 5s timeout
+
+    fetch(`${API_BASE}/salary-insights`, { signal: controller.signal })
+      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+      .then(d => {
+        if (!cancelled) {
+          setSalaryData(d.salary_data?.length ? d.salary_data : STATIC_SALARY_DATA);
+          setLoading(false);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setSalaryData(STATIC_SALARY_DATA);
+          setUsingFallback(true);
+          setLoading(false);
+        }
+      })
+      .finally(() => clearTimeout(timer));
+
+    return () => { cancelled = true; controller.abort(); };
   }, []);
 
   const maxSalary = 230;
@@ -113,6 +165,11 @@ export default function SalaryInsights({ extractedSkills = [], bestFitJobId }) {
 
   return (
     <div className="animate-fade-in">
+      {usingFallback && (
+        <div style={{ marginBottom: '1rem', padding: '0.65rem 1rem', borderRadius: 10, background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.25)', fontSize: '0.78rem', color: '#fbbf24', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          ⚠️ Showing cached salary data — live backend not available. Data is accurate as of 2024.
+        </div>
+      )}
       <div className="page-header">
         <h2 className="page-title">Salary & Market Insights</h2>
         <p className="page-subtitle">Entry, mid, and senior salary ranges across all 25 tech job roles</p>

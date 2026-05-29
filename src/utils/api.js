@@ -1,11 +1,13 @@
 /**
- * api.js — v6
+ * api.js — v7
  * API helper functions for communicating with the FastAPI backend.
- * All requests go through the Vite proxy: /api/* → http://localhost:8000
- * NEVER use hardcoded localhost URLs — they break CORS and deployment.
+ * Uses centralized API_BASE from config.js — never hardcode localhost.
+ *
+ * In local dev: requests go through Vite proxy /api/* → http://localhost:8000
+ * In production: requests go directly to VITE_API_URL (deployed Render backend)
  */
 
-const API_BASE = '/api';
+import { API_BASE } from './config';
 
 /**
  * Upload a PDF resume and receive full career analysis.
@@ -41,7 +43,10 @@ export async function sendChatMessage(message, conversationHistory = [], context
  */
 export async function checkHealth() {
   try {
-    const response = await fetch(`${API_BASE}/health`);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 4000); // 4s timeout
+    const response = await fetch(`${API_BASE}/health`, { signal: controller.signal });
+    clearTimeout(timer);
     return response.ok;
   } catch { return false; }
 }
@@ -87,5 +92,21 @@ export async function getInterviewQuestions(jobId, jobTitle, extractedSkills = [
 export async function getSalaryInsights() {
   const response = await fetch(`${API_BASE}/salary-insights`);
   if (!response.ok) throw new Error(`Salary insights error: ${response.status}`);
+  return response.json();
+}
+
+/**
+ * Optimize LinkedIn profile via backend Groq analysis.
+ */
+export async function optimizeLinkedIn(url, resumeSkills, jobRole) {
+  const response = await fetch(`${API_BASE}/linkedin-optimize`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url, resume_skills: resumeSkills, job_role: jobRole }),
+  });
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({ detail: 'LinkedIn optimize failed' }));
+    throw new Error(err.detail || `LinkedIn optimize error: ${response.status}`);
+  }
   return response.json();
 }

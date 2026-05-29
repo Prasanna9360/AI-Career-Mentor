@@ -116,9 +116,10 @@ SUGGESTION_TEMPLATES = {
     "statistics":       "Include coursework or certifications in statistics — mention tools like SPSS, SAS, or R used.",
     "data visualization": "Mention Tableau, Power BI, or D3.js dashboards you built, ideally with business impact.",
     "agile":            "Highlight Agile experience: sprint planning, retrospectives, velocity tracking, or Scrum Master involvement.",
-    "kubernetes":       "Mention Kubernetes cluster management — even a self-hosted cluster demonstrates strong ops skills.",
     "linux":            "Add Linux sysadmin tasks: 'Managed Ubuntu servers, configured cron jobs, automated deployments with Bash.'",
 }
+
+
 
 DEFAULT_SUGGESTION = "Add quantifiable achievements and project links to strengthen this skill's presence on your resume."
 
