@@ -74,8 +74,13 @@ MASTER_SKILLS = [
 ]
 
 # Deduplicate while preserving order
-_seen = set()
-MASTER_SKILLS = [s for s in MASTER_SKILLS if not (_seen.add(s) or s in _seen)]
+_deduped = []
+_seen_skills = set()
+for _s in MASTER_SKILLS:
+    if _s not in _seen_skills:
+        _seen_skills.add(_s)
+        _deduped.append(_s)
+MASTER_SKILLS = _deduped
 
 
 def extract_skills_spacy(text: str) -> List[str]:
