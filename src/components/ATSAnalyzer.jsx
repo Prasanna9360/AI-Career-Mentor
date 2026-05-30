@@ -266,9 +266,24 @@ export default function ATSAnalyzer({ audit, extractedSkills = [], topJob }) {
   const [showJdInput, setShowJdInput] = useState(false);
   const [showAllMissing, setShowAllMissing] = useState(false);
 
+  // Normalize client-side format to backend format if detected
+  const normalizedAudit = useMemo(() => {
+    if (audit && audit.ats_score !== undefined && !audit.overall_score) {
+      return {
+        ...audit,
+        overall_score: audit.ats_score,
+        dimensions: {
+          ats_compatibility: { score: audit.structure_score || 75 }
+        },
+        ats_issues: audit.formatting_issues || []
+      };
+    }
+    return audit || {};
+  }, [audit]);
+
   const ats = useMemo(
-    () => computeATSScore({ extractedSkills, topJob, audit, jdText }),
-    [extractedSkills, topJob, audit, jdText]
+    () => computeATSScore({ extractedSkills, topJob, audit: normalizedAudit, jdText }),
+    [extractedSkills, topJob, normalizedAudit, jdText]
   );
 
   const gradeColors = { A: 'var(--green)', B: '#06b6d4', C: 'var(--primary)', D: 'var(--yellow)', F: 'var(--red)' };
@@ -464,11 +479,11 @@ export default function ATSAnalyzer({ audit, extractedSkills = [], topJob }) {
       </div>
 
       {/* ── Audit Issues ── */}
-      {audit?.ats_issues?.length > 0 && (
+      {normalizedAudit?.ats_issues?.length > 0 && (
         <div className="glass-card" style={{ padding: '1.25rem', marginBottom: '1rem' }}>
           <h3 style={{ fontSize: '0.92rem', color: 'var(--text-1)', marginBottom: '0.85rem' }}>⚠ Detected ATS Issues</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            {audit.ats_issues.map((issue, i) => (
+            {normalizedAudit.ats_issues.map((issue, i) => (
               <div key={i} style={{ padding: '0.65rem 0.9rem', borderRadius: 8, background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', fontSize: '0.8rem', color: '#fca5a5' }}>
                 ✗ {issue}
               </div>
@@ -477,7 +492,7 @@ export default function ATSAnalyzer({ audit, extractedSkills = [], topJob }) {
         </div>
       )}
 
-      {!audit?.ats_issues?.length && (
+      {!normalizedAudit?.ats_issues?.length && (
         <div style={{ padding: '0.85rem 1rem', borderRadius: 8, background: 'rgba(16,185,129,0.07)', border: '1px solid rgba(16,185,129,0.2)', fontSize: '0.82rem', color: '#4ade80' }}>
           ✓ No major ATS compatibility issues detected. Your resume structure looks parseable.
         </div>

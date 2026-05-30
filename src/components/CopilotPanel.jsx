@@ -17,6 +17,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useCopilot } from '../context/CopilotContext';
 import { generateCareerInsight } from '../utils/insightEngine';
+import { API_BASE } from '../utils/config';
 
 // ── Quick-action prompt templates ────────────────────────────────────────────
 const QUICK_ACTIONS = [
@@ -220,7 +221,7 @@ export default function CopilotPanel({ resumeContext }) {
 
     try {
       const historyForAPI = newHistory.slice(1).map(m => ({ role: m.role, content: m.content }));
-      const res = await fetch('/api/ai-chat', {
+      const res = await fetch(`${API_BASE}/ai-chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

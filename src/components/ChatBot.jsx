@@ -11,6 +11,7 @@
  */
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { API_BASE } from '../utils/config';
 
 const SUGGESTIONS = [
   'What skills should I learn next?',
@@ -171,7 +172,7 @@ export default function ChatBot({ resumeContext }) {
 
     try {
       const historyForAPI = newHistory.slice(1).map(m => ({ role: m.role, content: m.content }));
-      const res = await fetch('/api/ai-chat', {
+      const res = await fetch(`${API_BASE}/ai-chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

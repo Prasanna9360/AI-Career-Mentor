@@ -218,11 +218,48 @@ export default function ResumeAudit({ audit }) {
     );
   }
 
-  const { overall_score, grade, grade_label, dimensions, ats_issues, certifications_found, priority_actions } = audit;
+  // Normalize client-side format to backend format if detected
+  let normalizedAudit = { ...audit };
+  
+  if (audit.ats_score !== undefined && !audit.overall_score) {
+    const overall = audit.ats_score;
+    const grade = overall >= 85 ? "A" : overall >= 70 ? "B" : overall >= 55 ? "C" : overall >= 40 ? "D" : "F";
+    const grade_labels = { A: "Outstanding Resume", B: "Strong Resume", C: "Good Foundation", D: "Needs Improvement", F: "Significant Gaps" };
+    
+    normalizedAudit = {
+      overall_score: overall,
+      grade,
+      grade_label: grade_labels[grade],
+      dimensions: {
+        skills_coverage:   { score: audit.keyword_score || 70, label: "Skills", feedback: "Ensure you list relevant keywords matching your target role." },
+        ats_compatibility: { score: audit.structure_score || 75, label: "ATS Score", feedback: "Ensure standard headers and single-column formatting." },
+        certifications:    { score: audit.impact_score || 65, label: "Certifications", feedback: "Include professional certifications and training programs." },
+        project_depth:     { score: audit.readability || 80, label: "Projects", feedback: "Provide detailed descriptions of your personal and professional projects." },
+        experience_level:  { score: audit.ats_score || 70, label: "Experience", feedback: "Add concrete achievements and metrics to your career history." },
+      },
+      ats_issues: audit.formatting_issues || [],
+      certifications_found: [],
+      priority_actions: [
+        { dimension: "Skills", score: audit.keyword_score || 70, action: "Add relevant keywords from job description to your resume." },
+        { dimension: "ATS Score", score: audit.structure_score || 75, action: "Fix formatting issues listed in the checklist." },
+        { dimension: "Certifications", score: audit.impact_score || 65, action: "Highlight professional certifications and credentials." },
+      ].sort((a, b) => a.score - b.score)
+    };
+  }
+
+  const {
+    overall_score = 0,
+    grade = 'C',
+    grade_label = 'Good Foundation',
+    dimensions = {},
+    ats_issues = [],
+    certifications_found = [],
+    priority_actions = []
+  } = normalizedAudit || {};
 
   // Scores map for radar
   const scores = Object.fromEntries(
-    Object.entries(dimensions).map(([k, v]) => [k, v.score])
+    Object.entries(dimensions || {}).map(([k, v]) => [k, v?.score || 0])
   );
 
   return (
@@ -269,7 +306,7 @@ export default function ResumeAudit({ audit }) {
         gap: '0.85rem', marginBottom: '1.25rem',
       }}>
         {DIMENSIONS.map(d => {
-          const dim = dimensions[d.key];
+          const dim = dimensions?.[d.key];
           if (!dim) return null;
           return (
             <div
