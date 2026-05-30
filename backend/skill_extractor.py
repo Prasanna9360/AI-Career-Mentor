@@ -12,18 +12,9 @@ not on every function call. This prevents a 2–4s cold start per request.
 import re
 from typing import List
 
-# ── spaCy: load model ONCE at startup ─────────────────────────────────────
-# If model is unavailable, NLP-based extraction gracefully falls back to
-# keyword matching. No performance cost after the first load.
-try:
-    import spacy
-    _NLP = spacy.load("en_core_web_sm")
-    _SPACY_AVAILABLE = True
-    print("[skill_extractor] spaCy model loaded successfully.")
-except Exception as _e:
-    _NLP = None
-    _SPACY_AVAILABLE = False
-    print(f"[skill_extractor] spaCy unavailable ({_e}). Using keyword fallback.")
+# spaCy removed to prevent Render build failure and OOM issues on Free tier.
+# Optimized regex-based keyword matching is used as the sole extraction mechanism.
+_SPACY_AVAILABLE = False
 
 
 # Master list of all trackable skills (lowercased, deduplicated)
@@ -83,25 +74,9 @@ for _s in MASTER_SKILLS:
 MASTER_SKILLS = _deduped
 
 
-def extract_skills_spacy(text: str) -> List[str]:
-    """Use the pre-loaded spaCy NLP model to extract skills."""
-    if not _SPACY_AVAILABLE or _NLP is None:
-        return extract_skills_keyword(text)
-
-    doc = _NLP(text.lower())
-    text_lower = text.lower()
-    found = []
-
-    for skill in MASTER_SKILLS:
-        if skill in text_lower:
-            found.append(skill)
-
-    return list(set(found))
-
-
 def extract_skills_keyword(text: str) -> List[str]:
     """
-    Keyword-based fallback skill extraction.
+    Keyword-based skill extraction.
     Searches for each master skill as a word/phrase in the resume text.
     """
     text_lower = text.lower()
@@ -121,10 +96,10 @@ def extract_skills_keyword(text: str) -> List[str]:
 def extract_skills(text: str) -> List[str]:
     """
     Main entry point for skill extraction.
-    Tries spaCy first (if available), falls back to keyword matching.
+    Uses optimized regex-based keyword matching with word boundaries.
     """
     if not text or not text.strip():
         return []
-    skills = extract_skills_spacy(text) if _SPACY_AVAILABLE else extract_skills_keyword(text)
+    skills = extract_skills_keyword(text)
     # Sort alphabetically for consistent output
     return sorted(skills)
