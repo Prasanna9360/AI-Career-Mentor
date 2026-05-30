@@ -1,382 +1,235 @@
 # 🤖 AI-Driven Skill-to-Employment Mapping Platform
 
-> **Maps your resume skills to real-world job opportunities** — with weighted AI matching, career roadmaps, live JD comparison, interview prep, LinkedIn optimization, and a Groq-powered career copilot.
-
-<div align="center">
-
-![Platform](https://img.shields.io/badge/Platform-Web%20App-6366f1?style=for-the-badge)
-![Frontend](https://img.shields.io/badge/Frontend-React%2018%20%2B%20Vite-61DAFB?style=for-the-badge&logo=react)
-![Backend](https://img.shields.io/badge/Backend-FastAPI%20v5-009688?style=for-the-badge&logo=fastapi)
-![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python)
-![AI](https://img.shields.io/badge/AI-Groq%20llama3-FF6B35?style=for-the-badge)
-![License](https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge)
-
-🏆 **2nd Prize — HACKFEST (MOBIUS 2K26)** · Thiagarajar College of Engineering
-
-</div>
+> **AI Career Mentor** maps your resume skills to real-world job opportunities with weighted matching, step-by-step career roadmaps, job description (JD) comparisons, interview prep, LinkedIn profile optimization, and a context-aware AI Career Copilot.
 
 ---
 
-## 📌 What This Project Does
+<p align="center">
+  <img src="docs/screenshots/banner.png" alt="AI Career Mentor Banner" width="100%">
+</p>
 
-Upload your resume PDF → The system automatically:
+<p align="center">
+  <img src="https://img.shields.io/badge/Platform-Web%20App-6366f1?style=for-the-badge" alt="Platform Badge">
+  <img src="https://img.shields.io/badge/Frontend-React%2018%20%2B%20Vite-61DAFB?style=for-the-badge&logo=react" alt="Frontend Badge">
+  <img src="https://img.shields.io/badge/Backend-FastAPI-009688?style=for-the-badge&logo=fastapi" alt="Backend Badge">
+  <img src="https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python" alt="Python Badge">
+  <img src="https://img.shields.io/badge/AI-Groq%20LLM-FF6B35?style=for-the-badge" alt="AI Badge">
+  <img src="https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge" alt="License Badge">
+</p>
 
-1. **Extracts your skills** using NLP (spaCy + keyword matching)
-2. **Matches you to 15 job roles** at companies like Google, Amazon, TCS, Infosys
-3. **Shows your readiness score** with weighted AI matching (Core skills = 70%, Other = 30%)
-4. **Predicts career impact**: *"Learning SQL can boost your match from 54% → 63%"*
-5. **Generates a step-by-step roadmap** to reach your best-fit role
-6. **Compares your resume vs any job description** you paste
-7. **Suggests curated courses** for every missing skill
-8. **Runs AI interview prep** with role-specific questions
-9. **Optimizes your LinkedIn profile** using Groq AI
-10. **Answers career questions** via an AI chatbot (30+ topics)
+<p align="center">
+  🏆 <b>2nd Prize — HACKFEST (MOBIUS 2K26)</b> · Thiagarajar College of Engineering
+</p>
 
 ---
 
-## 🏗️ System Architecture
+## ⚡ Quick Links
+* **Live Web Application:** [https://prasannaganesann.github.io/AI-Career-Mentor/](https://prasannaganesann.github.io/AI-Career-Mentor/)
+* **Production API Server:** [https://ai-career-mentor-api-2olt.onrender.com](https://ai-career-mentor-api-2olt.onrender.com)
+* **Backend Health Check:** [https://ai-career-mentor-api-2olt.onrender.com/health](https://ai-career-mentor-api-2olt.onrender.com/health)
 
-```
-┌──────────────────────────────────────────────────────────┐
-│                      USER BROWSER                        │
-│           React 18 + Vite  (localhost:5173)              │
-└───────────────────────┬──────────────────────────────────┘
-                        │  PDF Upload / REST API calls
-                        ▼
-┌──────────────────────────────────────────────────────────┐
-│                  FastAPI Backend v5                       │
-│                  (localhost:8000)                         │
-│                                                          │
-│  POST /api/upload        → Full resume analysis          │
-│  POST /api/match-jd      → JD vs Resume comparison       │
-│  POST /api/ai-chat       → Groq LLM career copilot       │
-│  POST /api/interview     → Interview question generator   │
-│  POST /api/linkedin      → LinkedIn profile optimizer     │
-│  GET  /api/health        → Health check                  │
-└──────┬───────────────────────┬───────────────────────────┘
-       │                       │
- ┌─────▼─────┐          ┌──────▼──────┐
- │  Resume   │          │  JD Text    │
- │  Parser   │          │  Parser     │
- │(pdfplumber│          │(skill_ext.) │
- └─────┬─────┘          └──────┬──────┘
-       └──────────┬────────────┘
-                  ▼
-   ┌──────────────────────────────┐
-   │      Skill Extractor         │
-   │  spaCy NLP + Keyword fallback│
-   └──────────────┬───────────────┘
-                  ▼
-   ┌──────────────────────────────┐
-   │    Weighted Job Matcher      │
-   │  Core Skills   → 70% weight  │
-   │  Other Skills  → 30% weight  │
-   │  score = 0.7×core + 0.3×other│
-   └──────────────┬───────────────┘
-                  ▼
-   ┌──────────────────────────────┐
-   │      Insights Engine         │
-   │  • Impact prediction         │
-   │  • Career roadmap builder    │
-   │  • Resume audit & scoring    │
-   │  • Time-to-hire estimates    │
-   └──────────────┬───────────────┘
-                  ▼
-   ┌──────────────────────────────┐
-   │    Groq LLM (llama3-8b)      │
-   │  • AI Career Copilot         │
-   │  • Interview Q generator     │
-   │  • LinkedIn optimizer        │
-   └──────────────────────────────┘
+---
+
+## 🌟 Core Features
+
+| Feature | Description | Tech Highlight |
+| :--- | :--- | :--- |
+| 📄 **3-Tier Resume Upload** | High-precision PDF parser with client-side, backend, and mock fallback tiers. | `pdfjs-dist` + `pdfplumber` |
+| 🤖 **AI Career Copilot** | Context-aware chatbot that answers career queries and auto-navigates tabs based on user intent. | Groq AI (`llama-3.1-8b-instant`) |
+| 📊 **Resume Audit** | Evaluates resumes across 5 key dimensions (experience, skills, ATS compatibility, certs, projects). | Custom Scorer Engine |
+| 🎯 **ATS Deep Analyzer** | Displays a checklist of structural checks and lists high-priority action items. | Schema Normalizer |
+| 💼 **Job Mapping** | Matches resumes against 15+ tech roles with weighted scoring (Core Skills = 70%, Other = 30%). | Overlap Algorithms |
+| 🗺️ **Career Roadmap** | Outlines prioritized learning steps to reach target roles with time-to-hire estimates. | `insights_engine.py` |
+| 📋 **JD Matcher** | Compares resume text with any pasted job description to show keyword matches. | Regex keyword matching |
+| 💰 **Salary Insights** | Details entry, mid, and senior salary ranges across all roles with remote-friendly indicators. | Static Fallbacks + REST API |
+| 🎤 **Interview Prep** | Role-specific coding and behavioral questions with client-side Groq custom generators. | `groqClient.js` |
+| 🔗 **LinkedIn Optimizer** | Generates detailed LinkedIn profile optimization tips. | LLM Analysis |
+| 📚 **Courses Panel** | Maps skill gaps to over 70 curated courses with platform colors and levels. | `courseEngine.js` |
+
+---
+
+## 📸 Interface Showcase
+
+<p align="center">
+  <img src="docs/screenshots/dashboard_mockup.png" alt="Platform Dashboard Mockup" width="100%">
+</p>
+
+---
+
+## 📐 System Architecture
+
+The following flowchart outlines the platform's multi-layered architecture:
+
+```mermaid
+flowchart TD
+    %% Styling
+    classDef client fill:#1e1b4b,stroke:#6366f1,stroke-width:2px,color:#fff;
+    classDef server fill:#0f172a,stroke:#0ea5e9,stroke-width:2px,color:#fff;
+    classDef external fill:#1c1917,stroke:#f97316,stroke-width:2px,color:#fff;
+
+    %% Nodes
+    A[Browser client: React 18 + Vite]:::client
+    B[Production API Server: FastAPI on Render]:::server
+    C[PDF Parser: pdfplumber + pypdf]:::server
+    D[Skill Extractor: Regex Keyword Matcher]:::server
+    E[Weighted Job Matcher]:::server
+    F[Insights & Scorer Engine]:::server
+    G[Groq AI API: llama-3.1-8b-instant]:::external
+
+    %% Relations
+    A -- 1. Uploads PDF / Sends REST payload --> B
+    B -- 2. Extracts PDF text --> C
+    C -- 3. Feeds raw text --> D
+    D -- 4. Identifies skills --> E
+    E -- 5. Computes overlap scores --> F
+    F -- 6. Pulls LLM analyses & suggestions --> G
+    G -- 7. Streams structured response --> F
+    F -- 8. Formulates JSON result --> B
+    B -- 9. Returns analysis payload --> A
 ```
 
 ---
 
-## ✨ Full Feature List
+## 🛠️ Tech Stack
 
-| Feature | Description | Powered By |
-|---|---|---|
-| 📄 **PDF Resume Parsing** | Extracts text from any PDF resume | pdfplumber + pypdf |
-| 🧠 **NLP Skill Extraction** | Identifies 100+ tech skills automatically | spaCy + keyword matching |
-| 🏢 **Company-Aligned Job Matching** | 15 roles at 8 real companies | Custom dataset |
-| ⚖️ **Weighted Scoring** | Core skills = 70%, Other = 30% | Custom algorithm |
-| ⚡ **Impact Prediction** | *"Learning SQL raises match 54% → 63%"* | Insights Engine |
-| 🔥 **Critical Skill Split** | 🔥 Must-learn vs ⚪ Secondary skills | jobs.json core_skills |
-| 📚 **One-Click Course Links** | Every missing skill → direct course URL | courses.json (78 mappings) |
-| 🗺️ **Career Roadmap** | Step-by-step path to your best-fit role | Insights Engine |
-| 📋 **JD Matcher** | Paste any LinkedIn/Naukri JD → gap report | skill_extractor.py |
-| 📊 **Resume Audit Score** | Scores your resume on 8 quality dimensions | resume_scorer.py |
-| 👥 **Candidate Benchmarking** | *"Top candidates have 9–11 skills. You have 5."* | Job dataset |
-| 🎤 **Interview Prep** | 10 Q&A per role + AI-generated custom questions | Groq llama3 |
-| 💼 **LinkedIn Optimizer** | AI rewrites your summary and headline | Groq llama3 |
-| 🤖 **AI Career Copilot** | Context-aware career guidance chatbot | Groq llama3 |
-| ⏱️ **Time Estimates** | *"~2 months of structured learning needed"* | Gap-based formula |
+* **Frontend:** React 18, Vite, HSL-themed CSS (Glassmorphism), PDF.js (`pdfjs-dist`)
+* **Backend:** FastAPI, Uvicorn, Python 3.11, `pypdf`, `pdfplumber`
+* **Infrastructure:** GitHub Pages (Static hosting), Render Free Tier (API hosting)
+* **AI & NLP:** Groq AI Cloud (`llama-3.1-8b-instant`), Word-Boundary regex matcher
 
 ---
 
-## 🧠 How the Matching Algorithm Works
-
-We use **weighted matching based on core competencies** — not a simple skill count:
-
-```python
-# Core skills (from jobs.json) carry 70% of the score
-# Other required skills carry 30%
-
-core_score  = len(core_skills_matched)  / len(total_core_skills)
-other_score = len(other_skills_matched) / len(total_other_skills)
-
-weighted_match = (0.70 × core_score + 0.30 × other_score) × 100
-```
-
-**Why this matters:** A candidate who knows Python + ML (core skills for Data Scientist) ranks higher than someone who only knows secondary tools — this mirrors **real hiring priorities**.
-
----
-
-## 📁 Project Structure
-
-```
-AI-Career-Mentor/
-│
-├── backend/                        # Python FastAPI backend
-│   ├── data/
-│   │   ├── jobs.json               # 15 job roles · company · core_skills · roadmap
-│   │   └── courses.json            # 78 skill → course URL mappings
-│   ├── main.py                     # FastAPI app — all API routes
-│   ├── job_matcher.py              # Weighted matching engine (70/30 core split)
-│   ├── insights_engine.py          # Impact prediction · roadmap · suggestions
-│   ├── resume_parser.py            # PDF text extraction (pdfplumber + pypdf)
-│   ├── resume_scorer.py            # 8-dimension resume quality audit
-│   ├── skill_extractor.py          # NLP skill extraction (spaCy + keyword)
-│   ├── ai_chat.py                  # Groq LLM career copilot
-│   ├── interview_prep.py           # Interview Q&A bank + AI question generator
-│   ├── linkedin_optimizer.py       # LinkedIn profile AI optimizer
-│   └── requirements.txt
-│
-├── auth-server/                    # Node.js JWT + Google OAuth microservice
-│   ├── routes/auth.js              # /signup · /login · /google (rate limited)
-│   ├── controllers/authController.js
-│   ├── models/User.js
-│   └── server.js
-│
-├── src/                            # React 18 + Vite frontend
-│   ├── components/
-│   │   ├── Dashboard.jsx           # 6-tab main dashboard
-│   │   ├── CopilotPanel.jsx        # AI Career Copilot (Groq-powered)
-│   │   ├── JobMatchCard.jsx        # Company card + readiness labels
-│   │   ├── MissingSkills.jsx       # 🔥/⚪ skill split + Learn buttons
-│   │   ├── JDMatcher.jsx           # Job description comparison
-│   │   ├── CareerRoadmap.jsx       # Step-by-step roadmap
-│   │   ├── InterviewPrep.jsx       # Interview Q&A + AI questions
-│   │   ├── LinkedInOptimizer.jsx   # LinkedIn AI optimizer
-│   │   ├── ATSAnalyzer.jsx         # ATS resume scoring
-│   │   ├── CoursesPanel.jsx        # Curated course recommendations
-│   │   ├── InsightsPanel.jsx       # AI-generated career insights
-│   │   ├── SalaryInsights.jsx      # Salary range benchmarks
-│   │   └── ChatBot.jsx             # Fallback chatbot
-│   ├── context/CopilotContext.jsx  # Global copilot state
-│   ├── utils/api.js                # API helper functions
-│   └── index.css                  # Dark glassmorphism design system
-│
-├── docs/screenshots/               # UI screenshots
-├── .env.example                    # Environment variable template
-├── SETUP.md                        # Quick-start terminal commands
-├── index.html
-├── vite.config.js
-└── README.md
-```
-
----
-
-## 📊 Dataset
-
-| Resource | Count | Details |
-|---|---|---|
-| Job Roles | **15** | Data Scientist, ML Engineer, DevOps, Full Stack, Cloud Architect, and more |
-| Companies | **8** | Google, Amazon, Microsoft, TCS, Infosys, Wipro, Zoho, Accenture |
-| Skill-Course Mappings | **78** | Every skill has a direct course link (Coursera, Udemy, YouTube) |
-| Experience Levels | **3** | Beginner · Intermediate · Advanced |
-| Core Skills Coverage | **100%** | Every role has weighted core + other skill split |
-| MCQ Bank | **500+** | Role-specific multiple choice interview questions |
-
----
-
-## 🚀 Quick Start
+## 💻 Installation & Local Running
 
 ### Prerequisites
-- **Python** 3.10, 3.11, or 3.12 *(3.13 has SpaCy compatibility issues — use 3.12)*
-- **Node.js** 18+
-- **MongoDB** (for auth — optional if skipping login)
-- **Groq API Key** — free at [console.groq.com](https://console.groq.com)
+* Python 3.11 / 3.12 / 3.13 / 3.14
+* Node.js v18+ and npm
+
+### 1. Backend Setup
+1. Navigate to the `backend/` subfolder:
+   ```bash
+   cd backend
+   ```
+2. Create and activate a Python virtual environment:
+   ```bash
+   python -m venv .venv
+   # Windows:
+   .venv\Scripts\activate
+   # Linux/macOS:
+   source .venv/bin/activate
+   ```
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Copy the environment variables template and add your API key:
+   ```bash
+   cp .env.example .env
+   ```
+   *Edit `.env` and add your `GROQ_API_KEY` from console.groq.com.*
+5. Run the FastAPI development server:
+   ```bash
+   python main.py
+   ```
+   *The backend will boot on [http://localhost:8000](http://localhost:8000).*
+
+### 2. Frontend Setup
+1. Navigate to the repository root directory:
+   ```bash
+   cd ..
+   ```
+2. Install npm dependencies:
+   ```bash
+   npm install
+   ```
+3. Create a local environment variables file:
+   ```bash
+   echo VITE_GROQ_API_KEY=your_key_here > .env.local
+   ```
+4. Run the Vite development server:
+   ```bash
+   npm run dev
+   ```
+   *Open [http://localhost:5173](http://localhost:5173) in your browser.*
 
 ---
 
-### Step 1 · Clone & Configure
+## ☁️ Production Deployment
 
-```bash
-git clone https://github.com/Prasannaganesann/AI-Career-Mentor.git
-cd AI-Career-Mentor
+### 1. Deployed Backend (Render)
+* Create a **Web Service** on [Render.com](https://render.com/).
+* Root Directory: `backend`
+* Build Command: `pip install -r requirements.txt`
+* Start Command: `uvicorn main:app --host 0.0.0.0 --port $PORT`
+* Environment Variables:
+  * `GROQ_API_KEY`: *Your Groq API key*
+  * `FRONTEND_URL`: `https://prasannaganesann.github.io`
 
-# Create your environment file
-copy .env.example .env
-```
-
-Open `.env` and fill in:
-```env
-GROQ_API_KEY=your_groq_api_key_here
-VITE_GROQ_API_KEY=your_groq_api_key_here
-VITE_API_URL=http://localhost:8000
-```
-
----
-
-### Step 2 · Backend (Terminal 1)
-
-```bash
-cd backend
-python -m venv .venv
-
-# Windows
-.venv\Scripts\activate
-
-# macOS / Linux
-source .venv/bin/activate
-
-pip install -r requirements.txt
-python -m spacy download en_core_web_sm
-
-uvicorn main:app --reload --port 8000
-```
-
-✅ Backend live at: http://localhost:8000  
-✅ Interactive API docs: http://localhost:8000/docs
+### 2. Deployed Frontend (GitHub Pages)
+The repository contains a pre-configured GitHub Actions workflow (`.github/workflows/deploy.yml`) that builds and deploys the frontend React application automatically on pushes to the `main` branch. 
+* Add `VITE_GROQ_API_KEY` to **GitHub Secrets** for client-side fallback parsing.
+* Add `VITE_API_URL` to **GitHub Secrets** pointing to your Render backend URL (e.g., `https://your-api.onrender.com/api`) to connect the frontend to the backend.
 
 ---
 
-### Step 3 · Auth Server — optional (Terminal 2)
+## 🔌 API Overview
 
-> Skip this if you don't need Google login.
+### `POST /api/upload`
+Uploads a PDF resume and returns a full career mapping analysis and visual resume audit.
+* **Payload:** `multipart/form-data` with `file` key containing the PDF.
+* **Response:**
+  ```json
+  {
+    "filename": "resume.pdf",
+    "extracted_text_preview": "...",
+    "career_readiness_score": 75,
+    "best_fit_job": "Machine Learning Engineer",
+    "best_fit_job_score": 85,
+    "top_3_matches": [...],
+    "job_matches": [...],
+    "resume_audit": {
+      "overall_score": 72,
+      "grade": "B",
+      "grade_label": "Strong Resume",
+      "dimensions": { ... }
+    }
+  }
+  ```
 
-```bash
-cd auth-server
-npm install
-npm run dev
-```
-
-✅ Auth server live at: http://localhost:3001
-
----
-
-### Step 4 · Frontend (Terminal 3)
-
-```bash
-# Back in project root
-npm install
-npm run dev
-```
-
-✅ App live at: **http://localhost:5173** 🎉
-
----
-
-## 🌐 API Reference
-
-| Method | Endpoint | Input | Output |
-|---|---|---|---|
-| `GET` | `/api/health` | — | Status check |
-| `POST` | `/api/upload` | PDF file | Full career analysis JSON |
-| `POST` | `/api/match-jd` | `{skills, jd_text}` | JD gap report |
-| `POST` | `/api/ai-chat` | `{message, context, history}` | AI response |
-| `POST` | `/api/interview` | `{role, skills}` | Interview Q&A |
-| `POST` | `/api/linkedin` | `{url, skills, role}` | Optimized profile text |
-
-Full interactive docs with request/response schemas: **http://localhost:8000/docs**
-
-### Sample API Call
-
-```bash
-# Upload a resume
-curl -X POST http://localhost:8000/api/upload \
-  -F "file=@resume.pdf"
-```
-
-```json
-{
-  "extracted_skills": ["Python", "SQL", "Machine Learning"],
-  "career_readiness_score": 72,
-  "best_fit_job": "Data Scientist at Infosys",
-  "best_fit_job_score": 72,
-  "top_3_matches": [
-    { "title": "Data Scientist", "company": "Infosys", "match_percentage": 72 },
-    { "title": "ML Engineer",   "company": "TCS",     "match_percentage": 58 },
-    { "title": "Data Analyst",  "company": "Wipro",   "match_percentage": 51 }
-  ],
-  "missing_critical_skills": ["Deep Learning", "TensorFlow"],
-  "impact_prediction": "Learning Deep Learning can increase your match from 72% → 85%"
-}
-```
+### `POST /api/ai-chat`
+Context-aware LLM chatbot endpoint.
+* **Payload:**
+  ```json
+  {
+    "message": "How do I become an AI Engineer?",
+    "conversation_history": [],
+    "context": { "extracted_skills": ["Python"] }
+  }
+  ```
+* **Response:** `{"response": "..."}`
 
 ---
 
-## ☁️ Deployment
-
-### Backend → [Render](https://render.com) *(Free tier)*
-
-1. Go to **render.com** → New → **Web Service**
-2. Connect this GitHub repo
-3. Set **Root Directory:** `backend`
-4. Set **Build command:** `pip install -r requirements.txt`
-5. Set **Start command:** `uvicorn main:app --host 0.0.0.0 --port 8000`
-6. Add environment variable: `GROQ_API_KEY = your_key`
-7. Deploy → copy the URL (e.g. `https://ai-career-mentor.onrender.com`)
-
-### Frontend → [Vercel](https://vercel.com) *(Free tier)*
-
-1. Go to **vercel.com** → New Project → import this repo
-2. Set **Root Directory** to `/`
-3. Add environment variable: `VITE_API_URL = https://ai-career-mentor.onrender.com`
-4. Deploy → live at `https://ai-career-mentor.vercel.app`
+## 🔒 Security Hardening
+* **CORS Restrictions:** Locked API endpoints prevent unauthorized requests from external domains.
+* **No Exposed Keys:** All secrets are stored safely in `.env` (locally) and GitHub Actions Secrets/Render Dashboard in production.
+* **Locked Environments:** Lock runtimes via `.python-version` files.
 
 ---
 
-## 🔐 Security
-
-- ✅ All API keys stored in `.env` (never committed)
-- ✅ Rate limiting on all auth endpoints (10 req / 15 min per IP)
-- ✅ No `dangerouslySetInnerHTML` — XSS-safe markdown renderer
-- ✅ GROQ_API_KEY read via `os.getenv()` in Python, `import.meta.env` in JS
-- ✅ `.gitignore` excludes `.env`, `node_modules`, `__pycache__`, `.venv`
+## 🗺️ Development Roadmap
+- [ ] Implement database integration (PostgreSQL) for user accounts and analytics.
+- [ ] Add real-time PDF scanning support for scanned image resumes (OCR integration).
+- [ ] Incorporate interactive coding test workspaces in the Interview tab.
+- [ ] Implement backend rate-limiting middleware to prevent API spam.
 
 ---
 
-## 🤝 Contributing
-
-Pull requests are welcome! For major changes, open an issue first.
-
-1. Fork the repo
-2. Create a feature branch: `git checkout -b feature/my-feature`
-3. Commit: `git commit -m 'feat: add my feature'`
-4. Push: `git push origin feature/my-feature`
-5. Open a Pull Request
+## 📝 License
+Distributed under the MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
-## 📄 License
-
-MIT License — free to use, modify, and distribute.
-
----
-
-## 🏆 Achievement
-
-> 🥈 **2nd Prize — HACKFEST (MOBIUS 2K26)**  
-> Organized by Thiagarajar College of Engineering  
-> *AI-Powered Skill-to-Employment Mapping Platform*
-
----
-
-<div align="center">
-
-Built with ❤️ by [Prasanna Ganesan](https://github.com/Prasannaganesann)  
-*AI Skill-to-Employment Mapping Platform · v5.0.0*
-
-</div>
+## 👨‍💻 Authors & Acknowledgement
+* **TCE HACKFEST Team Members:** Thiagarajar College of Engineering hackathon submission.
+* Developed for **MOBIUS 2K26**, winning **2nd Place**!
