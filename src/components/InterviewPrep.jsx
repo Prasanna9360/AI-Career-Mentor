@@ -14,8 +14,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { generateInterviewQuestions, clearQuestionCache } from '../utils/groqClient';
 import { getFallbackQuestions }                             from '../utils/questionBank';
-
-const API_BASE = '/api';
+import { API_BASE }                                         from '../utils/config';
 
 const DIFFICULTY_STYLE = {
   Easy:   { bg: 'var(--green-subtle)',  border: 'var(--green-border)',  text: 'var(--green)' },

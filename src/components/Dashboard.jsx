@@ -6,12 +6,9 @@
 
 import React, { useState, useEffect, Component } from 'react';
 import Sidebar          from './Sidebar';
-import SkillsPanel      from './SkillsPanel';
 import JobMatchCard     from './JobMatchCard';
 import MissingSkills    from './MissingSkills';
 import CoursesPanel     from './CoursesPanel';
-import ReadinessScore   from './ReadinessScore';
-import InsightsPanel    from './InsightsPanel';
 import CareerRoadmap    from './CareerRoadmap';
 import ResumeSuggestions from './ResumeSuggestions';
 import JDMatcher        from './JDMatcher';
@@ -21,7 +18,6 @@ import ATSAnalyzer      from './ATSAnalyzer';
 import InterviewPrep    from './InterviewPrep';
 import SalaryInsights   from './SalaryInsights';
 import LinkedInOptimizer from './LinkedInOptimizer';
-import TrendingSkills   from './TrendingSkills';
 import CopilotTrigger   from './CopilotTrigger';
 import { useCopilot }   from '../context/CopilotContext';
 import { useTheme }     from '../context/ThemeContext';
@@ -30,7 +26,6 @@ import ConfidenceIndicator from './ConfidenceIndicator';
 import CompanyMatchPanel  from './CompanyMatchPanel';
 import WhatIfAnalysis     from './WhatIfAnalysis';
 import CareerSimulation   from './CareerSimulation';
-import RecruiterView      from './RecruiterView';
 import UserMenu           from './UserMenu';
 
 function CountUp({ value, suffix = '' }) {
